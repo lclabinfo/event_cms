@@ -1,13 +1,75 @@
 import { RegistrationFormExample } from "@/components/registration-form-example"
+import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Palette, Layout, TestTube } from "lucide-react"
 
 export default function DemoPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Shadcn/UI Demo</h1>
+        <h1 className="text-4xl font-bold mb-2">Shadcn/UI Demo Hub</h1>
         <p className="text-muted-foreground">
-          This page demonstrates the Shadcn/ui components configured for the UBF Event Registration System.
+          Component development and testing environment for the UBF Event Registration System
         </p>
+      </div>
+
+      {/* Navigation Cards */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+        <Link href="/demo/components">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Palette className="mr-2 h-5 w-5" />
+                Component Gallery
+              </CardTitle>
+              <CardDescription>
+                Browse all available components with live previews and code examples
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">
+                View Components
+              </Button>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/demo/playground">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <TestTube className="mr-2 h-5 w-5" />
+                Playground
+              </CardTitle>
+              <CardDescription>
+                Experiment with component properties and combinations in real-time
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">
+                Open Playground
+              </Button>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Card className="hover:shadow-lg transition-shadow h-full opacity-75">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Layout className="mr-2 h-5 w-5" />
+              Templates
+            </CardTitle>
+            <CardDescription>
+              Ready-to-use component patterns and layouts (Coming Soon)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="w-full" disabled>
+              Coming Soon
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-8">
