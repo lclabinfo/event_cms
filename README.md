@@ -18,17 +18,22 @@ Multi-language church event registration platform for World Mission Conference, 
 
 2. **Setup environment variables**
    ```bash
-   cp .env.example .env.local
+   cp .env.local.example .env.local
+   # Generate NextAuth secret
+   openssl rand -base64 32
    ```
-   Update `.env.local` with your database connection string and other configurations.
+   Update `.env.local` with your database connection and the generated secret.
 
 3. **Setup database**
    ```bash
    # Generate Prisma client
    npx prisma generate
 
-   # Run migrations (when you have Azure PostgreSQL ready)
+   # Run migrations
    npx prisma migrate dev
+
+   # Seed sample data (optional)
+   npm run db:seed
    ```
 
 4. **Run development server**
@@ -36,6 +41,13 @@ Multi-language church event registration platform for World Mission Conference, 
    npm run dev
    ```
    Open [http://localhost:3000](http://localhost:3000)
+
+### Test Accounts
+
+After running `npm run db:seed`, you can login with:
+- **Admin**: admin@ubf.org / Admin123!
+- **Staff**: staff@ubf.org / Staff123!
+- **User**: user@example.com / User123!
 
 ## 📁 Project Structure
 
@@ -98,11 +110,18 @@ See [TEAM_COLLABORATION_GUIDE.md](TEAM_COLLABORATION_GUIDE.md) for collaboration
 - Internationalization setup
 - Git repository initialized
 
+✅ Completed features:
+- Authentication system with NextAuth.js
+- Database schema with migrations
+- User roles (admin, staff, user)
+- Protected routes and middleware
+- Sample seed data
+
 ⏳ Next steps:
-- Connect to Azure PostgreSQL
-- Implement authentication flow
-- Build event listing page
-- Create registration form
+- Payment integration (TossPayments)
+- Event listing page
+- Registration form with multi-step flow
+- Admin dashboard
 
 ## 📄 License
 
