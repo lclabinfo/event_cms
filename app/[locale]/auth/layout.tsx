@@ -1,9 +1,7 @@
 import { ReactNode } from 'react';
 import { SessionProvider } from '@/components/providers/session-provider';
-import './globals.css';
 
-// Root layout for non-localized pages (like /demo, /auth)
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: {
   children: ReactNode;

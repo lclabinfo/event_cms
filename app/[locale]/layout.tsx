@@ -5,19 +5,17 @@ import { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import { locales, Locale } from '@/i18n.config';
 import { Navigation } from '@/components/navigation';
+import { SessionProvider } from '@/components/providers/session-provider';
 import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export async function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
-}
-
 export async function generateMetadata({
-  params: { locale }
+  params
 }: {
-  params: { locale: Locale }
+  params: Promise<{ locale: Locale }>
 }) {
+  const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
   return {
@@ -28,11 +26,13 @@ export async function generateMetadata({
 
 export default async function RootLayout({
   children,
-  params: { locale }
+  params
 }: {
   children: ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+
   // Ensure that the incoming locale is valid
   if (!locales.includes(locale as Locale)) {
     notFound();
@@ -45,10 +45,12 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body className={inter.className}>
-        <NextIntlClientProvider messages={messages}>
-          <Navigation />
-          {children}
-        </NextIntlClientProvider>
+        <SessionProvider>
+          <NextIntlClientProvider messages={messages}>
+            <Navigation />
+            {children}
+          </NextIntlClientProvider>
+        </SessionProvider>
       </body>
     </html>
   );

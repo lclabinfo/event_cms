@@ -1,61 +1,48 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 
 const registerSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email format"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  orgId: z.string().optional(),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const validatedData = registerSchema.parse(body);
+
+    // Validate request body
+    const { name, email, password } = registerSchema.parse(body);
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: validatedData.email },
+      where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
         { error: "User with this email already exists" },
-        { status: 400 }
+        { status: 409 }
       );
     }
 
-    // Validate organization if provided
-    if (validatedData.orgId) {
-      const org = await prisma.organization.findUnique({
-        where: { id: validatedData.orgId },
-      });
-
-      if (!org) {
-        return NextResponse.json(
-          { error: "Invalid organization" },
-          { status: 400 }
-        );
-      }
-    }
-
     // Hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user
     const user = await prisma.user.create({
       data: {
-        email: validatedData.email,
-        name: validatedData.name,
+        name,
+        email,
         password: hashedPassword,
-        orgId: validatedData.orgId || null,
+        role: "USER", // Default role
       },
       select: {
         id: true,
-        email: true,
         name: true,
+        email: true,
         role: true,
         createdAt: true,
       },
@@ -68,12 +55,20 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Validation error", details: error.errors },
+        { error: "Validation error", details: error.issues },
         { status: 400 }
       );
     }
 
-    console.error("Registration error:", error);
+    if (error instanceof Error) {
+      console.error("Registration error:", error.message);
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
+
+    console.error("Unknown registration error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -38,6 +38,66 @@
     "next": "Next",
     "previous": "Previous"
   },
+  "auth": {
+    "signin": {
+      "title": "Sign In",
+      "description": "Sign in to your account to access services",
+      "heading": "Sign In",
+      "subheading": "Enter your email and password to sign in",
+      "emailLabel": "Email",
+      "emailPlaceholder": "email@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "submitButton": "Sign In",
+      "submitting": "Signing in...",
+      "googleButton": "Continue with Google",
+      "orDivider": "or",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up",
+      "errors": {
+        "invalidEmail": "Please enter a valid email address",
+        "passwordRequired": "Please enter your password",
+        "invalidCredentials": "Invalid email or password",
+        "genericError": "An error occurred during sign in",
+        "googleError": "An error occurred during Google sign in"
+      }
+    },
+    "register": {
+      "title": "Sign Up",
+      "description": "Create a new account to get started",
+      "heading": "Create Account",
+      "subheading": "Enter your information to create an account",
+      "nameLabel": "Name",
+      "namePlaceholder": "John Doe",
+      "emailLabel": "Email",
+      "emailPlaceholder": "email@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "submitButton": "Sign Up",
+      "submitting": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "signinLink": "Sign in",
+      "errors": {
+        "nameRequired": "Please enter your name",
+        "emailRequired": "Please enter your email",
+        "invalidEmail": "Please enter a valid email address",
+        "passwordRequired": "Please enter a password",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "passwordMismatch": "Passwords do not match",
+        "emailExists": "This email is already registered",
+        "genericError": "An error occurred during registration"
+      },
+      "success": "Registration complete. Please sign in."
+    },
+    "testAccount": {
+      "title": "Test Accounts",
+      "admin": "Administrator",
+      "staff": "Staff",
+      "user": "User"
+    }
+  },
   "payment": {
     "title": "Payment",
     "method": "Payment Method",

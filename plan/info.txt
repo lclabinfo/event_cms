@@ -1,0 +1,4 @@
+
+  관리자: admin@ubf.org / Admin123!
+  직원: staff@ubf.org / Staff123!
+  사용자: user@example.com / User123!
