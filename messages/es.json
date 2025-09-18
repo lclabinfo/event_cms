@@ -1,0 +1,46 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "register": "Registrar",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "home": "Inicio",
+    "events": "Eventos",
+    "about": "Acerca de",
+    "contact": "Contacto"
+  },
+  "event": {
+    "title": "Eventos",
+    "worldMission": "Conferencia de Misión Mundial",
+    "missionaryRetreat": "Retiro Misionero",
+    "tourProgram": "Programa de Tour",
+    "registration": "Inscripción",
+    "date": "Fecha",
+    "location": "Ubicación",
+    "price": "Precio",
+    "capacity": "Capacidad",
+    "remaining": "Disponible"
+  },
+  "registration": {
+    "title": "Inscripción",
+    "personalInfo": "Información Personal",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "selectProgram": "Seleccionar Programa",
+    "payment": "Pago",
+    "confirmation": "Confirmación",
+    "submit": "Enviar",
+    "next": "Siguiente",
+    "previous": "Anterior"
+  },
+  "payment": {
+    "title": "Pago",
+    "method": "Método de pago",
+    "card": "Tarjeta de crédito",
+    "bankTransfer": "Transferencia bancaria",
+    "virtualAccount": "Cuenta virtual",
+    "amount": "Monto",
+    "currency": "KRW"
+  }
+}

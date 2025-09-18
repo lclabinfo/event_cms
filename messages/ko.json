@@ -1,0 +1,46 @@
+{
+  "common": {
+    "welcome": "환영합니다",
+    "register": "등록",
+    "login": "로그인",
+    "logout": "로그아웃",
+    "home": "홈",
+    "events": "이벤트",
+    "about": "소개",
+    "contact": "연락처"
+  },
+  "event": {
+    "title": "이벤트",
+    "worldMission": "세계선교대회",
+    "missionaryRetreat": "선교사수양회",
+    "tourProgram": "투어 프로그램",
+    "registration": "참가 신청",
+    "date": "날짜",
+    "location": "장소",
+    "price": "가격",
+    "capacity": "정원",
+    "remaining": "남은 자리"
+  },
+  "registration": {
+    "title": "등록",
+    "personalInfo": "개인 정보",
+    "name": "이름",
+    "email": "이메일",
+    "phone": "전화번호",
+    "selectProgram": "프로그램 선택",
+    "payment": "결제",
+    "confirmation": "확인",
+    "submit": "제출",
+    "next": "다음",
+    "previous": "이전"
+  },
+  "payment": {
+    "title": "결제",
+    "method": "결제 방법",
+    "card": "신용카드",
+    "bankTransfer": "계좌이체",
+    "virtualAccount": "가상계좌",
+    "amount": "결제 금액",
+    "currency": "원"
+  }
+}

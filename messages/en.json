@@ -1,0 +1,46 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "register": "Register",
+    "login": "Login",
+    "logout": "Logout",
+    "home": "Home",
+    "events": "Events",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "event": {
+    "title": "Events",
+    "worldMission": "World Mission Conference",
+    "missionaryRetreat": "Missionary Retreat",
+    "tourProgram": "Tour Program",
+    "registration": "Registration",
+    "date": "Date",
+    "location": "Location",
+    "price": "Price",
+    "capacity": "Capacity",
+    "remaining": "Remaining"
+  },
+  "registration": {
+    "title": "Registration",
+    "personalInfo": "Personal Information",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "selectProgram": "Select Program",
+    "payment": "Payment",
+    "confirmation": "Confirmation",
+    "submit": "Submit",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "payment": {
+    "title": "Payment",
+    "method": "Payment Method",
+    "card": "Credit Card",
+    "bankTransfer": "Bank Transfer",
+    "virtualAccount": "Virtual Account",
+    "amount": "Amount",
+    "currency": "KRW"
+  }
+}
