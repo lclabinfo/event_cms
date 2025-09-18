@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "UBF 이벤트 등록 시스템",
+    "description": "세계선교대회 및 수양회 등록 플랫폼"
+  },
   "common": {
     "welcome": "환영합니다",
     "register": "등록",

@@ -167,10 +167,7 @@ Cost-effective options:
 ## 📝 Architecture References
 
 Detailed documentation available in `/architecture/`:
-- `SYSTEM_DESIGN.md` - Overall system architecture
-- `COMPONENT_DESIGN.md` - Component hierarchy and structure
-- `DATABASE_SCHEMA.sql` - Complete database schema
-- `API_SPECIFICATION.yaml` - OpenAPI specification
+
 
 ## 🔄 Development Workflow
 

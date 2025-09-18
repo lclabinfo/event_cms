@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "UBF Event Registration System",
+    "description": "World Mission Conference and Retreat Registration Platform"
+  },
   "common": {
     "welcome": "Welcome",
     "register": "Register",

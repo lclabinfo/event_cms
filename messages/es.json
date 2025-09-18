@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "Sistema de Registro de Eventos UBF",
+    "description": "Plataforma de Registro para Conferencias y Retiros Mundiales"
+  },
   "common": {
     "welcome": "Bienvenido",
     "register": "Registrar",
