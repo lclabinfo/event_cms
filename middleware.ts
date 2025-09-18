@@ -75,9 +75,7 @@ export default function middleware(req: NextRequest) {
     !pathname.startsWith('/api/') &&
     !pathname.startsWith('/_next') &&
     !pathname.startsWith('/_vercel') &&
-    !pathname.includes('.') &&
-    !pathname.startsWith('/demo') &&
-    !pathname.startsWith('/auth/test');
+    !pathname.includes('.');
 
   if (shouldHandleLocale) {
     // Check if authentication is required for this path
