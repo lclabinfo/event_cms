@@ -14,7 +14,29 @@
     "venue": "Lugar",
     "events": "Eventos",
     "about": "Acerca de",
-    "contact": "Contacto"
+    "contact": "Contacto",
+    "registerNow": "Regístrate Ahora",
+    "learnMore": "Saber Más",
+    "comingSoon": "Próximamente"
+  },
+  "hero": {
+    "title": "Congreso Mundial de Misión 2026",
+    "subtitle": "Heme aquí, envíame",
+    "verse": "Isaías 6:8",
+    "dates": "17-21 de mayo de 2026 | Corea del Sur",
+    "viewSchedule": "Ver Programa",
+    "registerButton": "Registrar",
+    "scrollDown": "Desplazar hacia abajo"
+  },
+  "home": {
+    "programsTitle": "Información del Programa",
+    "programsSubtitle": "Programas especiales que acompañan al Congreso Mundial de Misión",
+    "worldMissionDesc": "17 de mayo | KINTEX\nConferencia de misión a gran escala con 3,000 asistentes",
+    "missionaryDesc": "18-20 de mayo | Alpensia Resort\nRenovación espiritual para misioneros y pastores",
+    "tourDesc": "20-21 de mayo | Varias ubicaciones\nExplora la historia y cultura coreana",
+    "ctaTitle": "Únete a la Visión de la Misión Mundial",
+    "ctaSubtitle": "Un tiempo especial con misioneros reunidos de 100 países en todo el mundo",
+    "ctaButton": "Regístrate para recibir notificaciones de pre-registro"
   },
   "event": {
     "title": "Eventos",
@@ -27,6 +49,136 @@
     "price": "Precio",
     "capacity": "Capacidad",
     "remaining": "Disponible"
+  },
+  "schedulePage": {
+    "disclaimer": "* El programa está sujeto a cambios",
+    "day1": {
+      "date": "17 de mayo de 2026 (domingo)",
+      "events": {
+        "registration": "Registro",
+        "opening": "Servicio de Apertura",
+        "lecture1": "Conferencia Principal 1",
+        "lunch": "Almuerzo",
+        "missionReport": "Informes de Misión",
+        "lecture2": "Conferencia Principal 2",
+        "dinner": "Cena",
+        "closing": "Presentación Cultural y Servicio de Clausura"
+      }
+    },
+    "day2": {
+      "date": "18-20 de mayo de 2026",
+      "events": {
+        "arrival": "Llegada y Registro",
+        "conference": "Conferencia y Talleres para Misioneros",
+        "shepherdConf": "Conferencia y Networking para Pastores"
+      }
+    },
+    "day3": {
+      "date": "20-21 de mayo de 2026",
+      "location": "Varias Ubicaciones",
+      "events": {
+        "tourA": "Tour Histórico y Cultural de Seúl",
+        "tourB": "Tour de Cultura Budista en Gyeongju",
+        "tourC": "Tour de Seguridad DMZ"
+      }
+    }
+  },
+  "speakersPage": {
+    "subtitle": "Conoce a expertos en misión de todo el mundo",
+    "speakingTopic": "Tema de Conferencia",
+    "moreSpeakers": "¡Más Oradores Próximamente!",
+    "moreSpeakersDesc": "Misioneros y expertos de todo el mundo se unirán a nosotros",
+    "getNotified": "Regístrate para recibir notificaciones",
+    "speakers": {
+      "kimJoseph": {
+        "name": "Pastor Joseph Kim",
+        "title": "Director Internacional de UBF",
+        "bio": "30 años de dedicación a la misión en campus con experiencia enviando misioneros a más de 100 países en todo el mundo.",
+        "topic": "Visión y Desafíos de la Misión Mundial"
+      },
+      "sarahAbraham": {
+        "name": "Dra. Sarah Abraham",
+        "title": "Directora de UBF Chicago",
+        "bio": "Especialista en misión médica con 20 años de ministerio en África y Asia.",
+        "topic": "Misión Médica y Evangelismo"
+      },
+      "leeSarah": {
+        "name": "Misionera Sarah Lee",
+        "title": "Misionera de UBF Kenia",
+        "bio": "15 años de enfoque en el desarrollo del liderazgo indígena en el continente africano.",
+        "topic": "Desarrollo del Liderazgo Indígena"
+      },
+      "johnChang": {
+        "name": "Pastor John Chang",
+        "title": "Pastor de UBF Alemania",
+        "bio": "Pionero en el ministerio de refugiados europeos y la plantación de iglesias multiculturales.",
+        "topic": "Campo Misionero en Europa"
+      },
+      "parkMaria": {
+        "name": "Misionera Maria Park",
+        "title": "Misionera de UBF India",
+        "bio": "Desarrolló estrategias para la propagación del evangelio en contextos culturales hindúes.",
+        "topic": "Estrategia de Misión en la Cultura Hindú"
+      },
+      "peterKim": {
+        "name": "Dr. Peter Kim",
+        "title": "Profesor de Misiología",
+        "bio": "Autor de numerosos libros sobre teología y práctica misionera.",
+        "topic": "Paradigma de Misión del Siglo XXI"
+      }
+    }
+  },
+  "venuePage": {
+    "subtitle": "Información sobre lugares del evento",
+    "transportation": "Transporte",
+    "facilities": "Instalaciones",
+    "transportInfo": {
+      "title": "Transporte y Alojamiento",
+      "airport": "Aeropuerto de Incheon ↔ KINTEX: Servicio de recogida disponible (reserva anticipada requerida)",
+      "shuttle": "KINTEX → Alpensia: Servicio de autobús chárter (tarde del 17 de mayo)",
+      "accommodation": "Alojamiento: Reserva grupal en Alpensia Resort (tarifas especiales)",
+      "details": "La información detallada del transporte se proporcionará después del registro"
+    },
+    "venues": {
+      "kintex": {
+        "name": "KINTEX",
+        "date": "17 de mayo",
+        "address": "217-60, KINTEX-ro, Ilsanseo-gu, Goyang-si, Gyeonggi-do",
+        "description": "El centro de exposiciones y convenciones más grande de Corea con grandes salas que pueden acomodar a más de 3,000 personas.",
+        "transportation": {
+          "subway": "Metro: Línea 3 Estación Daehwa Salida 2 (5 minutos a pie)",
+          "airportBus": "Autobús del Aeropuerto: Autobús directo desde el Aeropuerto de Incheon (1 hora)",
+          "parking": "Estacionamiento: Gran estacionamiento disponible (de pago)"
+        },
+        "facilities": {
+          "hall": "Auditorio Grande",
+          "breakout": "Salas de Reuniones",
+          "restaurant": "Restaurante",
+          "cafe": "Café",
+          "wifi": "Internet Inalámbrico"
+        }
+      },
+      "alpensia": {
+        "name": "Alpensia Resort",
+        "date": "18-20 de mayo",
+        "address": "325, Solbong-ro, Daegwallyeong-myeon, Pyeongchang-gun, Gangwon-do",
+        "description": "Sede de los Juegos Olímpicos de Invierno de PyeongChang 2018, donde puedes tener un tiempo de renovación espiritual en la hermosa naturaleza.",
+        "transportation": {
+          "ktx": "KTX: Estación de Seúl → Estación Jinbu (1 hora 30 minutos) + Autobús lanzadera",
+          "charter": "Autobús Chárter: Salida desde Seúl (aviso separado para registrantes)",
+          "car": "En Auto: 2 horas 30 minutos desde Seúl"
+        },
+        "facilities": {
+          "conference": "Sala de Conferencias",
+          "accommodation": "Alojamiento",
+          "restaurant": "Restaurante",
+          "spa": "Spa",
+          "golf": "Campo de Golf",
+          "ski": "Estación de Esquí"
+        }
+      }
+    },
+    "registerButton": "Regístrate Ahora"
   },
   "registration": {
     "title": "Inscripción",
