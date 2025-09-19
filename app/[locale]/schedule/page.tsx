@@ -4,41 +4,43 @@ import { useTranslations } from 'next-intl';
 
 export default function SchedulePage() {
   const t = useTranslations('common');
+  const tSchedule = useTranslations('schedulePage');
+  const tEvent = useTranslations('event');
 
   const schedule = [
     {
-      date: '2026년 5월 17일 (일)',
-      title: 'World Mission Congress',
+      date: tSchedule('day1.date'),
+      title: tEvent('worldMission'),
       location: 'KINTEX',
       events: [
-        { time: '09:00', description: '등록' },
-        { time: '10:00', description: '개회예배' },
-        { time: '11:00', description: '주제강연 1' },
-        { time: '12:00', description: '점심식사' },
-        { time: '14:00', description: '선교보고' },
-        { time: '16:00', description: '주제강연 2' },
-        { time: '18:00', description: '저녁식사' },
-        { time: '19:30', description: '문화공연 및 폐회예배' }
+        { time: '09:00', description: tSchedule('day1.events.registration') },
+        { time: '10:00', description: tSchedule('day1.events.opening') },
+        { time: '11:00', description: tSchedule('day1.events.lecture1') },
+        { time: '12:00', description: tSchedule('day1.events.lunch') },
+        { time: '14:00', description: tSchedule('day1.events.missionReport') },
+        { time: '16:00', description: tSchedule('day1.events.lecture2') },
+        { time: '18:00', description: tSchedule('day1.events.dinner') },
+        { time: '19:30', description: tSchedule('day1.events.closing') }
       ]
     },
     {
-      date: '2026년 5월 18-20일',
-      title: 'Missionary & Shepherd Conference',
+      date: tSchedule('day2.date'),
+      title: tEvent('missionaryRetreat'),
       location: 'Alpensia Resort',
       events: [
-        { time: 'Day 1', description: '도착 및 등록' },
-        { time: 'Day 2', description: '선교사 컨퍼런스 및 워크샵' },
-        { time: 'Day 3', description: '목자 컨퍼런스 및 네트워킹' }
+        { time: 'Day 1', description: tSchedule('day2.events.arrival') },
+        { time: 'Day 2', description: tSchedule('day2.events.conference') },
+        { time: 'Day 3', description: tSchedule('day2.events.shepherdConf') }
       ]
     },
     {
-      date: '2026년 5월 20-21일',
-      title: 'Tour Programs',
-      location: '다양한 지역',
+      date: tSchedule('day3.date'),
+      title: tEvent('tourProgram'),
+      location: tSchedule('day3.location', { defaultValue: '다양한 지역' }),
       events: [
-        { time: 'Option A', description: '서울 역사문화 탐방' },
-        { time: 'Option B', description: '경주 불교문화 탐방' },
-        { time: 'Option C', description: 'DMZ 안보관광' }
+        { time: 'Option A', description: tSchedule('day3.events.tourA') },
+        { time: 'Option B', description: tSchedule('day3.events.tourB') },
+        { time: 'Option C', description: tSchedule('day3.events.tourC') }
       ]
     }
   ];
@@ -75,9 +77,9 @@ export default function SchedulePage() {
       </div>
 
       <div className="mt-12 text-center">
-        <p className="text-gray-600 mb-4">* 일정은 사정에 따라 변경될 수 있습니다</p>
+        <p className="text-gray-600 mb-4">{tSchedule('disclaimer')}</p>
         <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold">
-          지금 등록하기
+          {t('registerNow')}
         </button>
       </div>
     </main>

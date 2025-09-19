@@ -14,7 +14,29 @@
     "venue": "장소",
     "events": "이벤트",
     "about": "소개",
-    "contact": "연락처"
+    "contact": "연락처",
+    "registerNow": "지금 등록하기",
+    "learnMore": "자세히 보기",
+    "comingSoon": "곧 공개됩니다"
+  },
+  "hero": {
+    "title": "2026 세계선교대회",
+    "subtitle": "내가 여기 있나이다 나를 보내소서",
+    "verse": "이사야 6:8",
+    "dates": "2026년 5월 17-21일 | 대한민국",
+    "viewSchedule": "일정 보기",
+    "registerButton": "등록하기",
+    "scrollDown": "아래로 스크롤"
+  },
+  "home": {
+    "programsTitle": "프로그램 안내",
+    "programsSubtitle": "세계선교대회와 함께하는 특별한 프로그램들",
+    "worldMissionDesc": "5월 17일 | KINTEX\n3,000명이 함께하는 대규모 선교대회",
+    "missionaryDesc": "5월 18-20일 | Alpensia Resort\n선교사와 목자들의 영적 재충전",
+    "tourDesc": "5월 20-21일 | 전국 각지\n한국의 역사와 문화 탐방",
+    "ctaTitle": "세계선교의 비전에 동참하세요",
+    "ctaSubtitle": "전 세계 100개국에서 모이는 선교사들과 함께하는 특별한 시간",
+    "ctaButton": "사전 등록 알림 신청"
   },
   "event": {
     "title": "이벤트",
@@ -27,6 +49,143 @@
     "price": "가격",
     "capacity": "정원",
     "remaining": "남은 자리"
+  },
+  "schedulePage": {
+    "disclaimer": "* 일정은 사정에 따라 변경될 수 있습니다",
+    "day1": {
+      "date": "2026년 5월 17일 (일)",
+      "events": {
+        "registration": "등록",
+        "opening": "개회예배",
+        "lecture1": "주제강연 1",
+        "lunch": "점심식사",
+        "missionReport": "선교보고",
+        "lecture2": "주제강연 2",
+        "dinner": "저녁식사",
+        "closing": "문화공연 및 폐회예배"
+      }
+    },
+    "day2": {
+      "date": "2026년 5월 18-20일",
+      "events": {
+        "arrival": "도착 및 등록",
+        "conference": "선교사 컨퍼런스 및 워크샵",
+        "shepherdConf": "목자 컨퍼런스 및 네트워킹"
+      }
+    },
+    "day3": {
+      "date": "2026년 5월 20-21일",
+      "location": "다양한 지역",
+      "events": {
+        "tourA": "서울 역사문화 탐방",
+        "tourB": "경주 불교문화 탐방",
+        "tourC": "DMZ 안보관광"
+      }
+    }
+  },
+  "speakersPage": {
+    "subtitle": "세계 각지에서 활동하는 선교 전문가들을 만나보세요",
+    "speakingTopic": "강연 주제",
+    "moreSpeakers": "더 많은 강연자가 곧 공개됩니다!",
+    "moreSpeakersDesc": "전 세계에서 활동하는 선교사들과 전문가들이 함께합니다",
+    "getNotified": "등록하고 알림 받기"
+  },
+  "venuePage": {
+    "subtitle": "행사가 진행되는 장소 안내",
+    "transportation": "교통편",
+    "facilities": "시설",
+    "transportInfo": {
+      "title": "교통 및 숙박 안내",
+      "airport": "인천공항 ↔ KINTEX: 픽업 서비스 제공 (사전 신청 필수)",
+      "shuttle": "KINTEX → Alpensia: 전세버스 운행 (5/17 저녁)",
+      "accommodation": "숙박: Alpensia Resort 단체 예약 (특별 할인가 적용)",
+      "details": "자세한 교통편은 등록 후 개별 안내 예정"
+    },
+    "venues": {
+      "kintex": {
+        "name": "KINTEX (킨텍스)",
+        "date": "5월 17일",
+        "address": "경기도 고양시 일산서구 킨텍스로 217-60",
+        "description": "한국 최대 규모의 전시 컨벤션 센터로, 3,000명 이상 수용 가능한 대형 홀을 보유하고 있습니다.",
+        "transportation": {
+          "subway": "지하철: 3호선 대화역 2번 출구 (도보 5분)",
+          "airportBus": "공항버스: 인천공항에서 직행버스 운행 (1시간 소요)",
+          "parking": "주차: 대형 주차장 완비 (유료)"
+        },
+        "facilities": {
+          "hall": "대형 강당",
+          "breakout": "분임토의실",
+          "restaurant": "식당",
+          "cafe": "카페",
+          "wifi": "무선 인터넷"
+        }
+      },
+      "alpensia": {
+        "name": "Alpensia Resort (알펜시아 리조트)",
+        "date": "5월 18-20일",
+        "address": "강원도 평창군 대관령면 솔봉로 325",
+        "description": "2018 평창 동계올림픽이 개최된 곳으로, 아름다운 자연 속에서 영적 재충전의 시간을 가질 수 있습니다.",
+        "transportation": {
+          "ktx": "KTX: 서울역 → 진부역 (1시간 30분) + 셔틀버스",
+          "charter": "전세버스: 서울에서 출발 (등록자에게 별도 안내)",
+          "car": "자가용: 서울에서 2시간 30분 소요"
+        },
+        "facilities": {
+          "conference": "컨퍼런스 홀",
+          "accommodation": "숙박시설",
+          "restaurant": "레스토랑",
+          "spa": "스파",
+          "golf": "골프장",
+          "ski": "스키장"
+        }
+      }
+    },
+    "registerButton": "지금 등록하기"
+  },
+  "speakersPage": {
+    "subtitle": "세계 각지에서 활동하는 선교 전문가들을 만나보세요",
+    "speakingTopic": "강연 주제",
+    "moreSpeakers": "더 많은 강연자가 곧 공개됩니다!",
+    "moreSpeakersDesc": "전 세계에서 활동하는 선교사들과 전문가들이 함께합니다",
+    "getNotified": "등록하고 알림 받기",
+    "speakers": {
+      "kimJoseph": {
+        "name": "김요셉 목사",
+        "title": "UBF 국제대표",
+        "bio": "30년간 캠퍼스 선교에 헌신하며 전 세계 100개국 이상에 선교사를 파송한 경험이 있습니다.",
+        "topic": "세계선교의 비전과 도전"
+      },
+      "sarahAbraham": {
+        "name": "Dr. Sarah Abraham",
+        "title": "시카고 UBF 대표",
+        "bio": "의료선교 전문가로서 아프리카와 아시아 지역에서 20년간 사역했습니다.",
+        "topic": "의료선교와 복음전도"
+      },
+      "leeSarah": {
+        "name": "이사라 선교사",
+        "title": "케냐 UBF 선교사",
+        "bio": "15년간 아프리카 대륙에서 현지인 리더십 개발에 집중해왔습니다.",
+        "topic": "현지인 리더십 개발"
+      },
+      "johnChang": {
+        "name": "Pastor John Chang",
+        "title": "독일 UBF 목사",
+        "bio": "유럽 난민 사역과 다문화 교회 개척의 선구자입니다.",
+        "topic": "유럽의 선교 현장"
+      },
+      "parkMaria": {
+        "name": "박마리아 선교사",
+        "title": "인도 UBF 선교사",
+        "bio": "힌두교 문화권에서의 복음 전파 전략을 개발했습니다.",
+        "topic": "힌두 문화권 선교 전략"
+      },
+      "peterKim": {
+        "name": "Dr. Peter Kim",
+        "title": "선교학 교수",
+        "bio": "선교 신학과 실천에 관한 다수의 저서를 출간했습니다.",
+        "topic": "21세기 선교 패러다임"
+      }
+    }
   },
   "registration": {
     "title": "등록",

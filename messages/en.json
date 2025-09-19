@@ -14,7 +14,29 @@
     "venue": "Venue",
     "events": "Events",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "registerNow": "Register Now",
+    "learnMore": "Learn More",
+    "comingSoon": "Coming Soon"
+  },
+  "hero": {
+    "title": "2026 World Mission Congress",
+    "subtitle": "Here am I, Send me",
+    "verse": "Isaiah 6:8",
+    "dates": "May 17-21, 2026 | South Korea",
+    "viewSchedule": "View Schedule",
+    "registerButton": "Register",
+    "scrollDown": "Scroll Down"
+  },
+  "home": {
+    "programsTitle": "Program Information",
+    "programsSubtitle": "Special programs accompanying the World Mission Congress",
+    "worldMissionDesc": "May 17 | KINTEX\nLarge-scale mission conference with 3,000 attendees",
+    "missionaryDesc": "May 18-20 | Alpensia Resort\nSpiritual renewal for missionaries and shepherds",
+    "tourDesc": "May 20-21 | Various Locations\nExplore Korean history and culture",
+    "ctaTitle": "Join the Vision of World Mission",
+    "ctaSubtitle": "A special time with missionaries gathering from 100 countries worldwide",
+    "ctaButton": "Sign Up for Pre-Registration Notification"
   },
   "event": {
     "title": "Events",
@@ -26,7 +48,144 @@
     "location": "Location",
     "price": "Price",
     "capacity": "Capacity",
-    "remaining": "Remaining"
+    "remaining": "Seats Available"
+  },
+  "schedulePage": {
+    "disclaimer": "* Schedule is subject to change",
+    "day1": {
+      "date": "May 17, 2026 (Sunday)",
+      "events": {
+        "registration": "Registration",
+        "opening": "Opening Service",
+        "lecture1": "Keynote Lecture 1",
+        "lunch": "Lunch",
+        "missionReport": "Mission Reports",
+        "lecture2": "Keynote Lecture 2",
+        "dinner": "Dinner",
+        "closing": "Cultural Performance & Closing Service"
+      }
+    },
+    "day2": {
+      "date": "May 18-20, 2026",
+      "events": {
+        "arrival": "Arrival & Registration",
+        "conference": "Missionary Conference & Workshops",
+        "shepherdConf": "Shepherd Conference & Networking"
+      }
+    },
+    "day3": {
+      "date": "May 20-21, 2026",
+      "location": "Various Locations",
+      "events": {
+        "tourA": "Seoul Historical & Cultural Tour",
+        "tourB": "Gyeongju Buddhist Culture Tour",
+        "tourC": "DMZ Security Tour"
+      }
+    }
+  },
+  "speakersPage": {
+    "subtitle": "Meet mission experts from around the world",
+    "speakingTopic": "Speaking Topic",
+    "moreSpeakers": "More Speakers Coming Soon!",
+    "moreSpeakersDesc": "Missionaries and experts from around the world will join us",
+    "getNotified": "Register to Get Notified"
+  },
+  "venuePage": {
+    "subtitle": "Event venue information",
+    "transportation": "Transportation",
+    "facilities": "Facilities",
+    "transportInfo": {
+      "title": "Transportation & Accommodation",
+      "airport": "Incheon Airport ↔ KINTEX: Pickup service available (advance booking required)",
+      "shuttle": "KINTEX → Alpensia: Charter bus service (May 17 evening)",
+      "accommodation": "Accommodation: Alpensia Resort group booking (special rates)",
+      "details": "Detailed transportation info will be provided after registration"
+    },
+    "venues": {
+      "kintex": {
+        "name": "KINTEX",
+        "date": "May 17",
+        "address": "217-60, KINTEX-ro, Ilsanseo-gu, Goyang-si, Gyeonggi-do",
+        "description": "Korea's largest exhibition and convention center with large halls that can accommodate over 3,000 people.",
+        "transportation": {
+          "subway": "Subway: Line 3 Daehwa Station Exit 2 (5-minute walk)",
+          "airportBus": "Airport Bus: Direct bus from Incheon Airport (1 hour)",
+          "parking": "Parking: Large parking lot available (paid)"
+        },
+        "facilities": {
+          "hall": "Large Auditorium",
+          "breakout": "Breakout Rooms",
+          "restaurant": "Restaurant",
+          "cafe": "Cafe",
+          "wifi": "Wireless Internet"
+        }
+      },
+      "alpensia": {
+        "name": "Alpensia Resort",
+        "date": "May 18-20",
+        "address": "325, Solbong-ro, Daegwallyeong-myeon, Pyeongchang-gun, Gangwon-do",
+        "description": "The venue of the 2018 PyeongChang Winter Olympics, where you can have a time of spiritual renewal in beautiful nature.",
+        "transportation": {
+          "ktx": "KTX: Seoul Station → Jinbu Station (1 hour 30 minutes) + Shuttle bus",
+          "charter": "Charter Bus: Departing from Seoul (separate notice for registrants)",
+          "car": "By Car: 2 hours 30 minutes from Seoul"
+        },
+        "facilities": {
+          "conference": "Conference Hall",
+          "accommodation": "Accommodation",
+          "restaurant": "Restaurant",
+          "spa": "Spa",
+          "golf": "Golf Course",
+          "ski": "Ski Resort"
+        }
+      }
+    },
+    "registerButton": "Register Now"
+  },
+  "speakersPage": {
+    "subtitle": "Meet mission experts from around the world",
+    "speakingTopic": "Speaking Topic",
+    "moreSpeakers": "More Speakers Coming Soon!",
+    "moreSpeakersDesc": "Missionaries and experts from around the world will join us",
+    "getNotified": "Register to Get Notified",
+    "speakers": {
+      "kimJoseph": {
+        "name": "Pastor Joseph Kim",
+        "title": "UBF International Director",
+        "bio": "30 years of dedication to campus mission with experience sending missionaries to over 100 countries worldwide.",
+        "topic": "Vision and Challenges of World Mission"
+      },
+      "sarahAbraham": {
+        "name": "Dr. Sarah Abraham",
+        "title": "Chicago UBF Director",
+        "bio": "Medical mission specialist with 20 years of ministry in Africa and Asia.",
+        "topic": "Medical Mission and Evangelism"
+      },
+      "leeSarah": {
+        "name": "Missionary Sarah Lee",
+        "title": "Kenya UBF Missionary",
+        "bio": "15 years of focus on indigenous leadership development in the African continent.",
+        "topic": "Indigenous Leadership Development"
+      },
+      "johnChang": {
+        "name": "Pastor John Chang",
+        "title": "Germany UBF Pastor",
+        "bio": "Pioneer in European refugee ministry and multicultural church planting.",
+        "topic": "Mission Field in Europe"
+      },
+      "parkMaria": {
+        "name": "Missionary Maria Park",
+        "title": "India UBF Missionary",
+        "bio": "Developed strategies for gospel propagation in Hindu cultural contexts.",
+        "topic": "Mission Strategy in Hindu Culture"
+      },
+      "peterKim": {
+        "name": "Dr. Peter Kim",
+        "title": "Professor of Missiology",
+        "bio": "Author of numerous books on mission theology and practice.",
+        "topic": "21st Century Mission Paradigm"
+      }
+    }
   },
   "registration": {
     "title": "Registration",
@@ -54,12 +213,12 @@
       "submitButton": "Sign In",
       "submitting": "Signing in...",
       "googleButton": "Continue with Google",
-      "orDivider": "or",
+      "orDivider": "OR",
       "noAccount": "Don't have an account?",
-      "signupLink": "Sign up",
+      "signupLink": "Sign Up",
       "errors": {
         "invalidEmail": "Please enter a valid email address",
-        "passwordRequired": "Please enter your password",
+        "passwordRequired": "Password is required",
         "invalidCredentials": "Invalid email or password",
         "genericError": "An error occurred during sign in",
         "googleError": "An error occurred during Google sign in"
@@ -77,26 +236,26 @@
       "passwordLabel": "Password",
       "passwordPlaceholder": "At least 8 characters",
       "confirmPasswordLabel": "Confirm Password",
-      "confirmPasswordPlaceholder": "Re-enter your password",
+      "confirmPasswordPlaceholder": "Enter password again",
       "submitButton": "Sign Up",
       "submitting": "Creating account...",
       "hasAccount": "Already have an account?",
-      "signinLink": "Sign in",
+      "signinLink": "Sign In",
       "errors": {
-        "nameRequired": "Please enter your name",
-        "emailRequired": "Please enter your email",
+        "nameRequired": "Name is required",
+        "emailRequired": "Email is required",
         "invalidEmail": "Please enter a valid email address",
-        "passwordRequired": "Please enter a password",
+        "passwordRequired": "Password is required",
         "passwordMinLength": "Password must be at least 8 characters",
         "passwordMismatch": "Passwords do not match",
-        "emailExists": "This email is already registered",
-        "genericError": "An error occurred during registration"
+        "emailExists": "Email already registered",
+        "genericError": "An error occurred during sign up"
       },
-      "success": "Registration complete. Please sign in."
+      "success": "Account created successfully. Please sign in."
     },
     "testAccount": {
-      "title": "Test Accounts",
-      "admin": "Administrator",
+      "title": "Test Account",
+      "admin": "Admin",
       "staff": "Staff",
       "user": "User"
     }
@@ -107,7 +266,7 @@
     "card": "Credit Card",
     "bankTransfer": "Bank Transfer",
     "virtualAccount": "Virtual Account",
-    "amount": "Amount",
+    "amount": "Payment Amount",
     "currency": "KRW"
   }
 }
