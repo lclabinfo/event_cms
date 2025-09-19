@@ -1,4 +1,46 @@
+ 데이터베이스 스키마를 완전히 초기화하고 새로운 구조로 재생성했습니다:
 
-  관리자: admin@ubf.org / Admin123!
-  직원: staff@ubf.org / Staff123!
-  사용자: user@example.com / User123!
+  📊 구현된 내용
+
+  1. 스키마 구조 (30+ 테이블)
+  - User & Authentication 시스템 (UserRole enum 포함)
+  - Organization & Subscription (다단계 구독 플랜)
+  - Event Management (이벤트, 프로그램, 할인코드)
+  - Registration & Participants (등록, 참가자, 대기자)
+  - Payment System (B2B/B2C 결제)
+  - Communication (이메일 템플릿, SMS 로그, 알림)
+  - Storage Management (파일 업로드)
+  - Analytics & Audit (활동 로그, 분석 데이터)
+  - Custom Domain 관리 시스템
+
+  2. 생성된 샘플 데이터
+
+  Organizations (2개):
+  - 서울 UBF (PRO 플랜 - 연간 구독)
+  - 인천 UBF (BASIC 플랜 - 월간 구독)
+
+  Events (각 기관당 2개, 총 4개):
+  - 2026 세계선교대회 (서울 UBF)
+  - 2026 봄 성경학교 (서울 UBF)
+  - 2026 인천지역 연합수양회 (인천 UBF)
+  - 2026 청년 여름 캠프 (인천 UBF)
+
+  Users (6명):
+  - 플랫폼 관리자 (SUPER_ADMIN)
+  - 기관 소유자 2명 (ORG_OWNER)
+  - 기관 관리자 1명 (ORG_ADMIN)
+  - 일반 참가자 2명 (PARTICIPANT)
+
+  추가 데이터:
+  - 프로그램, 할인코드, 등록, 결제 기록
+  - 이메일 템플릿, 결제 계정 설정
+  - 활동 로그, 분석 데이터, 알림
+  - 커스텀 도메인 설정 (wmc2026.org)
+
+  🔐 로그인 정보
+
+  Super Admin: admin@platform.com / admin123!
+  Seoul UBF Owner: owner@seoulubf.org / seoul123!
+  Seoul UBF Admin: admin@seoulubf.org / seoul123!
+  Incheon UBF Owner: owner@incheonubf.org / incheon123!
+  Participant: john.doe@example.com / password123
