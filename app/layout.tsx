@@ -2,17 +2,14 @@ import { ReactNode } from 'react';
 import { SessionProvider } from '@/components/providers/session-provider';
 import './globals.css';
 
-// Root layout for non-localized pages (like /demo, /auth)
+// Root layout - provides SessionProvider for all routes
+// HTML/body tags are handled by individual route layouts
 export default function RootLayout({
   children,
 }: {
   children: ReactNode;
 }) {
   return (
-    <html lang="ko">
-      <body>
-        <SessionProvider>{children}</SessionProvider>
-      </body>
-    </html>
+    <SessionProvider>{children}</SessionProvider>
   );
 }
