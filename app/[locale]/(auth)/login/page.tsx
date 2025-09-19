@@ -1,15 +1,18 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { RegisterForm } from "@/components/auth/RegisterFormIntl";
+import { SignInForm } from "@/components/auth/SignInFormIntl";
 
-interface RegisterPageProps {
+interface SignInPageProps {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{
+    callbackUrl?: string;
+  }>;
 }
 
-export async function generateMetadata({ params }: RegisterPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: SignInPageProps): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'auth.register' });
+  const t = await getTranslations({ locale, namespace: 'auth.signin' });
 
   return {
     title: t('title'),
@@ -17,27 +20,28 @@ export async function generateMetadata({ params }: RegisterPageProps): Promise<M
   };
 }
 
-export default async function RegisterPage({ params }: RegisterPageProps) {
+export default async function SignInPage({ params, searchParams }: SignInPageProps) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'auth.register' });
+  const search = await searchParams;
+  const t = await getTranslations({ locale, namespace: 'auth.signin' });
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px]">
+      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">{t('heading')}</h1>
           <p className="text-sm text-muted-foreground">
             {t('subheading')}
           </p>
         </div>
-        <RegisterForm />
+        <SignInForm callbackUrl={search.callbackUrl} />
         <p className="px-8 text-center text-sm text-muted-foreground">
-          {t('hasAccount')}{" "}
+          {t('noAccount')}{" "}
           <Link
-            href={`/${locale}/auth/signin`}
+            href={`/${locale}/register`}
             className="underline underline-offset-4 hover:text-primary"
           >
-            {t('signinLink')}
+            {t('signupLink')}
           </Link>
         </p>
       </div>

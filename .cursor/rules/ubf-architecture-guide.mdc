@@ -1,0 +1,129 @@
+---
+alwaysApply: true
+description: "UBF 이벤트 시스템 아키텍처 및 개발 가이드"
+---
+
+# UBF Event System - Architecture & Development Guide
+
+이 규칙은 Korea UBF WMC Registration System 개발 시 항상 참조해야 할 아키텍처 및 개발 가이드입니다.
+
+## 🎯 핵심 참조 문서
+
+### 1. 개발 가이드
+[CLAUDE.md](mdc:CLAUDE.md) - 프로젝트 전체 개발 가이드라인과 기술 스택 정보
+
+### 2. 시스템 아키텍처
+[architecture/SYSTEM_ARCHITECTURE.md](mdc:architecture/SYSTEM_ARCHITECTURE.md) - 전체 시스템 아키텍처 설계
+
+### 3. 멀티테넌트 설계
+[architecture/MULTI_TENANT_DESIGN.md](mdc:architecture/MULTI_TENANT_DESIGN.md) - 멀티테넌트 아키텍처 상세 설계
+
+## 🏗️ 기술 스택 (항상 준수)
+
+```yaml
+Frontend:
+  Framework: Next.js 14 (App Router)
+  Styling: Tailwind CSS + Shadcn/ui
+  State: Zustand
+  Forms: React Hook Form + Zod
+  i18n: next-intl
+
+Backend:
+  Runtime: Node.js 20 LTS
+  API: Next.js API Routes + tRPC
+  Auth: NextAuth.js
+  ORM: Prisma
+  Validation: Zod
+
+Database:
+  Primary: PostgreSQL 15
+  Cache: Redis
+  Session: Redis Store
+
+Payments:
+  Korea: TossPayments or PortOne (아임포트)
+  International: Stripe (future)
+```
+
+## 🔄 개발 원칙 (항상 적용)
+
+### 1. 타입 안전성
+- 모든 API는 tRPC로 타입 안전하게 구현
+- Zod 스키마를 통한 입력 검증
+- TypeScript 타입 우선 개발
+
+### 2. 멀티테넌트 보안
+- Row Level Security (RLS) 적용
+- 모든 데이터베이스 쿼리에 org_id 필터링
+- JWT 토큰에 테넌트 정보 포함
+
+### 3. 결제 처리
+- 한국 결제는 TossPayments/PortOne 우선
+- 멱등성 키 사용 필수
+- 웹훅 서명 검증
+- 트랜잭션 처리
+
+### 4. 데이터베이스 마이그레이션
+- `npx prisma migrate dev --name <change>` 로컬 개발
+- `npx prisma migrate deploy` 프로덕션 배포
+- 절대 `migrate:fresh` 실행 금지
+
+## 🚫 금지 사항
+
+- `php artisan migrate:fresh` 절대 실행 금지
+- 직접 데이터베이스 접근 금지 (Prisma 사용 필수)
+- 카드번호 등 민감정보 저장 금지
+- `/app/demo/` 디렉토리 삭제 금지
+- tRPC 없이 API 엔드포인트 생성 금지
+
+## 📁 프로젝트 구조 준수
+
+```
+church-event/
+├── app/[locale]/          # i18n 라우팅 (ko/en/es)
+├── components/ui/         # Shadcn/ui 기본 컴포넌트
+├── components/events/     # 이벤트 특화 컴포넌트
+├── lib/db/               # 데이터베이스 클라이언트
+├── lib/payment/          # 결제 통합
+├── prisma/               # 데이터베이스 스키마
+└── architecture/         # 시스템 설계 문서
+```
+
+## 🎨 UI/UX 가이드라인
+
+- Mobile-first 반응형 디자인
+- Shadcn/ui 컴포넌트 기본 사용
+- 로딩 상태 및 에러 바운더리 구현
+- 접근성(a11y) 고려
+
+## 💳 결제 통합 필수사항
+
+```typescript
+// 멱등성 키 사용 예시
+const payment = await tossPayments.createPayment({
+  idempotencyKey: `${userId}-${eventId}-${timestamp}`,
+  // ...
+});
+
+// 트랜잭션 처리 예시
+await prisma.$transaction(async (tx) => {
+  const registration = await tx.registration.create(...);
+  const payment = await tx.payment.create(...);
+  return { registration, payment };
+});
+```
+
+## 🌐 다국어 지원
+
+- next-intl 사용
+- 동적 로케일 라우팅: `/${locale}/events`
+- 한국어 우선 개발
+
+## 📊 모니터링 및 로깅
+
+- 구조화된 로깅 (Winston)
+- Azure Application Insights
+- 결제 실패율 모니터링
+- 감사 로그 기록
+
+이 가이드를 항상 참조하여 일관된 개발을 진행하세요.
