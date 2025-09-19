@@ -2,6 +2,7 @@
 
 ## 🎯 Overview
 Multi-tenant SaaS 이벤트 등록 플랫폼을 위한 완벽한 데이터베이스 스키마 설계입니다.
+**최근 업데이트**: SMS 발송, 할인 코드, 대기자 관리, 파일 스토리지 기능 추가
 
 ## 📋 Table of Contents
 1. [User & Authentication](#user--authentication)
@@ -10,7 +11,8 @@ Multi-tenant SaaS 이벤트 등록 플랫폼을 위한 완벽한 데이터베이
 4. [Registration & Participants](#registration--participants)
 5. [Payment System](#payment-system)
 6. [Communication & Customization](#communication--customization)
-7. [Analytics & Audit](#analytics--audit)
+7. [Storage Management](#storage-management)
+8. [Analytics & Audit](#analytics--audit)
 
 ---
 
@@ -156,6 +158,9 @@ model Organization {
   features          Json      @default("{}") // 활성화된 기능
   isActive          Boolean   @default(true)
   isVerified        Boolean   @default(false)
+  
+  // 스토리지 관리
+  storageUsed       BigInt    @default(0) // bytes 단위
 
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -168,6 +173,9 @@ model Organization {
   emailTemplates    EmailTemplate[]
   customForms       CustomForm[]
   activityLogs      ActivityLog[]
+  smsLogs           SmsLog[]
+  fileUploads       FileUpload[]
+  customDomains     CustomDomain[]      // 커스텀 도메인 관리
 }
 ```
 
@@ -273,6 +281,11 @@ model Event {
   emailTemplateIds  Json      @default("[]")
   tags              String[]
 
+  // 도메인 & 브랜딩 (이벤트별)
+  customDomain      String?   @unique   // 이벤트 전용 커스텀 도메인
+  domainVerified    Boolean   @default(false)
+  customBranding    Json?     // 이벤트별 브랜딩 설정
+
   // 통계
   totalRegistrations Int      @default(0)
   totalRevenue      Decimal   @default(0) @db.Decimal(10, 2)
@@ -289,6 +302,9 @@ model Event {
   programs          Program[]
   registrations     Registration[]
   customForm        CustomForm?  @relation(fields: [customFormId], references: [id])
+  discountCodes     DiscountCode[]
+  fileUploads       FileUpload[]
+  customDomains     CustomDomain[]       // 이벤트별 커스텀 도메인
 
   @@unique([orgId, slug])
   @@index([orgId])
@@ -330,9 +346,136 @@ model Program {
 
   event             Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
   participations    ProgramParticipation[]
+  waitlists         Waitlist[]
 
   @@unique([eventId, code])
   @@index([eventId])
+}
+```
+
+### 7. DiscountCode Table
+할인 코드 및 프로모션을 관리합니다.
+
+```prisma
+model DiscountCode {
+  id                String    @id @default(uuid())
+  eventId           String
+  code              String    @unique
+  description       String?
+  
+  // 할인 정보
+  discountType      String    // percentage, fixed
+  discountValue     Decimal   @db.Decimal(10, 2)
+  
+  // 사용 제한
+  maxUses           Int?
+  currentUses       Int       @default(0)
+  maxUsesPerUser    Int       @default(1)
+  
+  // 유효 기간
+  validFrom         DateTime
+  validUntil        DateTime
+  
+  // 적용 조건
+  conditions        Json?     // 특정 조건 (회원사, 프로그램 등)
+  minAmount         Decimal?  @db.Decimal(10, 2) // 최소 결제 금액
+  
+  // 상태
+  isActive          Boolean   @default(true)
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  event             Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@index([eventId])
+  @@index([code])
+  @@index([validFrom, validUntil])
+}
+```
+
+### 8. CustomDomain Table
+이벤트별 또는 기관별 커스텀 도메인을 체계적으로 관리합니다.
+
+```prisma
+enum DomainType {
+  ORGANIZATION  // 기관 전체용: events.seoul-ubf.org
+  EVENT         // 이벤트 전용: wmc2026.seoul-ubf.org, wmc2026.com
+}
+
+enum DomainStatus {
+  PENDING       // DNS 설정 대기
+  VERIFYING     // 검증 진행 중
+  VERIFIED      // 검증 완료
+  FAILED        // 검증 실패
+  EXPIRED       // 만료됨
+  SUSPENDED     // 일시 중단
+}
+
+model CustomDomain {
+  id                String       @id @default(uuid())
+  
+  // 연결 정보
+  orgId             String
+  eventId           String?      // null이면 기관 전체용
+  
+  // 도메인 정보
+  domain            String       @unique
+  type              DomainType
+  isPrimary         Boolean      @default(false)  // 기본 도메인 여부
+  
+  // 검증 상태
+  status            DomainStatus @default(PENDING)
+  verificationToken String?      // DNS TXT 레코드용 토큰
+  verifiedAt        DateTime?
+  
+  // SSL 설정
+  sslEnabled        Boolean      @default(false)
+  sslStatus         String?      // pending, active, failed
+  certificateId     String?      // SSL 인증서 ID
+  sslIssuedAt       DateTime?
+  sslExpiresAt      DateTime?
+  
+  // 리다이렉트 설정
+  redirectTo        String?      // 리다이렉트 대상 도메인
+  redirectType      Int         @default(301)  // 301, 302
+  forceHttps        Boolean     @default(true)
+  
+  // DNS 설정 (자동 감지)
+  dnsRecords        Json?       // A, CNAME 등 DNS 레코드 정보
+  lastDnsCheck      DateTime?
+  
+  // 브랜딩 오버라이드 (이벤트용)
+  customBranding    Json?       // 도메인별 특별한 브랜딩
+  
+  metadata          Json        @default("{}")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  organization      Organization @relation(fields: [orgId], references: [id])
+  event             Event?       @relation(fields: [eventId], references: [id])
+  
+  @@index([orgId])
+  @@index([eventId])
+  @@index([domain])
+  @@index([status])
+}
+```
+
+#### Custom Branding JSON Example
+```json
+{
+  "logo": "https://wmc2026.com/special-logo.png",
+  "primaryColor": "#FF6B35",
+  "secondaryColor": "#004225", 
+  "favicon": "https://wmc2026.com/favicon.ico",
+  "customCss": ".hero { background: linear-gradient(...) }",
+  "socialMediaImage": "https://wmc2026.com/og-image.png",
+  "analytics": {
+    "googleAnalytics": "GA-XXXXX",
+    "facebookPixel": "123456789"
+  }
 }
 ```
 
@@ -340,7 +483,7 @@ model Program {
 
 ## Registration & Participants
 
-### 7. Registration Table
+### 9. Registration Table
 등록 정보를 관리하는 핵심 테이블입니다.
 
 ```prisma
@@ -395,6 +538,8 @@ model Registration {
   payment           Payment?
   participants      Participant[]
   programParticipations ProgramParticipation[]
+  waitlists         Waitlist[]
+  fileUploads       FileUpload[]
 
   @@index([eventId])
   @@index([userId])
@@ -403,7 +548,7 @@ model Registration {
 }
 ```
 
-### 8. Participant Table
+### 10. Participant Table
 실제 참가자 정보를 저장합니다 (그룹 등록 시 여러 명).
 
 ```prisma
@@ -475,11 +620,49 @@ model ProgramParticipation {
 }
 ```
 
+### 10. Waitlist Table
+프로그램 대기자 명단을 관리합니다.
+
+```prisma
+model Waitlist {
+  id                String    @id @default(uuid())
+  programId         String
+  registrationId    String
+  
+  // 대기 정보
+  position          Int       // 대기 순번
+  priority          Int       @default(0) // 우선순위 (높을수록 우선)
+  
+  // 알림 및 처리
+  notifiedAt        DateTime? // 알림 발송 시점
+  notificationCount Int       @default(0) // 알림 발송 횟수
+  expiresAt         DateTime? // 대기 만료 시간
+  
+  // 상태 변경
+  status            String    @default("waiting")
+  // waiting, notified, confirmed, expired, cancelled
+  confirmedAt       DateTime? // 확정 시점
+  cancelledAt       DateTime? // 취소 시점
+  cancelReason      String?
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  program           Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  registration      Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  
+  @@unique([programId, registrationId])
+  @@index([programId, status, position])
+  @@index([registrationId])
+}
+```
+
 ---
 
 ## Payment System
 
-### 10. Invoice Table (B2B)
+### 11. Invoice Table (B2B)
 플랫폼 구독료 청구서를 관리합니다.
 
 ```prisma
@@ -516,7 +699,7 @@ model Invoice {
 }
 ```
 
-### 11. PaymentAccount Table
+### 12. PaymentAccount Table
 기관별 결제 게이트웨이 설정을 저장합니다.
 
 ```prisma
@@ -549,7 +732,7 @@ model PaymentAccount {
 }
 ```
 
-### 12. Payment Table (B2C)
+### 13. Payment Table (B2C)
 참가비 결제 정보를 관리합니다.
 
 ```prisma
@@ -593,7 +776,7 @@ model Payment {
 }
 ```
 
-### 13. WebhookLog Table
+### 14. WebhookLog Table
 결제 웹훅 로그를 저장합니다.
 
 ```prisma
@@ -621,7 +804,7 @@ model WebhookLog {
 
 ## Communication & Customization
 
-### 14. EmailTemplate Table
+### 15. EmailTemplate Table
 이메일 템플릿을 관리합니다.
 
 ```prisma
@@ -665,7 +848,7 @@ model EmailTemplate {
 ]
 ```
 
-### 15. CustomForm Table
+### 16. CustomForm Table
 커스텀 등록 폼을 정의합니다.
 
 ```prisma
@@ -735,7 +918,7 @@ model CustomForm {
 ]
 ```
 
-### 16. Notification Table
+### 17. Notification Table
 사용자 알림을 관리합니다.
 
 ```prisma
@@ -764,11 +947,116 @@ model Notification {
 }
 ```
 
+### 18. SmsLog Table
+SMS 발송 기록을 관리합니다.
+
+```prisma
+model SmsLog {
+  id                String    @id @default(uuid())
+  orgId             String
+  
+  // 수신자 정보
+  recipient         String    // 수신자 전화번호
+  recipientName     String?
+  registrationId    String?   // 관련 등록 ID
+  eventId           String?   // 관련 행사 ID
+  
+  // 메시지 내용
+  message           String    @db.Text
+  messageType       String    // registration, reminder, notification, marketing
+  templateId        String?   // SMS 템플릿 ID
+  
+  // 발송 정보
+  provider          String    // aligo, twilio, aws_sns 등
+  providerId        String?   // 외부 제공자 메시지 ID
+  
+  // 상태
+  status            String    @default("pending")
+  // pending, sent, delivered, failed
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  failedAt          DateTime?
+  failureReason     String?
+  
+  // 비용
+  cost              Decimal?  @db.Decimal(10, 2)
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  
+  organization      Organization @relation(fields: [orgId], references: [id])
+  
+  @@index([orgId])
+  @@index([registrationId])
+  @@index([status])
+  @@index([createdAt])
+}
+```
+
+---
+
+## Storage Management
+
+### 19. FileUpload Table
+파일 업로드 및 스토리지 사용량을 관리합니다.
+
+```prisma
+model FileUpload {
+  id                String    @id @default(uuid())
+  orgId             String
+  
+  // 파일 정보
+  fileName          String
+  originalName      String
+  fileType          String    // image, document, video, other
+  mimeType          String
+  fileSize          BigInt    // bytes
+  
+  // 저장 위치
+  storageProvider   String    @default("local") // local, s3, cloudinary
+  filePath          String    // 실제 저장 경로
+  fileUrl           String    // 접근 가능한 URL
+  thumbnailUrl      String?   // 썸네일 URL (이미지/비디오)
+  
+  // 연관 정보
+  entityType        String?   // event, registration, participant, organization
+  entityId          String?
+  eventId           String?
+  registrationId    String?
+  
+  // 업로드 정보
+  uploadedBy        String
+  uploadedAt        DateTime  @default(now())
+  
+  // 상태
+  isPublic          Boolean   @default(false)
+  isDeleted         Boolean   @default(false)
+  deletedAt         DateTime?
+  
+  // 보안
+  virusScanStatus   String?   // pending, clean, infected, error
+  virusScanAt       DateTime?
+  
+  metadata          Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  organization      Organization @relation(fields: [orgId], references: [id])
+  event             Event?       @relation(fields: [eventId], references: [id])
+  registration      Registration? @relation(fields: [registrationId], references: [id])
+  
+  @@index([orgId])
+  @@index([entityType, entityId])
+  @@index([uploadedBy])
+  @@index([isDeleted])
+}
+```
+
 ---
 
 ## Analytics & Audit
 
-### 17. ActivityLog Table
+### 20. ActivityLog Table
 모든 중요 활동을 기록하는 감사 로그입니다.
 
 ```prisma
@@ -801,7 +1089,7 @@ model ActivityLog {
 }
 ```
 
-### 18. Analytics Table
+### 21. Analytics Table
 분석 데이터를 저장합니다.
 
 ```prisma
@@ -848,12 +1136,21 @@ erDiagram
     Organization ||--|| Subscription : "has"
     Organization ||--o{ Event : "hosts"
     Organization ||--o{ PaymentAccount : "has"
+    Organization ||--o{ SmsLog : "sends"
+    Organization ||--o{ FileUpload : "stores"
+    Organization ||--o{ CustomDomain : "manages"
     Event ||--o{ Program : "contains"
     Event ||--o{ Registration : "receives"
+    Event ||--o{ DiscountCode : "offers"
+    Event ||--o{ FileUpload : "has"
+    Event ||--o{ CustomDomain : "has custom domain"
     Registration ||--o{ Participant : "includes"
     Registration ||--o{ ProgramParticipation : "participates"
+    Registration ||--o{ Waitlist : "waits"
+    Registration ||--o{ FileUpload : "uploads"
     Registration ||--|| Payment : "pays"
     Program ||--o{ ProgramParticipation : "has participants"
+    Program ||--o{ Waitlist : "manages"
     Subscription ||--o{ Invoice : "generates"
     Payment ||--o{ WebhookLog : "logs"
 ```
@@ -865,7 +1162,7 @@ erDiagram
 ### 1. Multi-Tenancy Strategy
 - **Organization-based isolation**: 모든 데이터는 Organization ID로 격리
 - **Flexible user roles**: 한 사용자가 여러 기관에 다른 역할로 소속 가능
-- **Subdomain support**: 기관별 고유 도메인 지원
+- **Multi-level custom domains**: 기관별 + 이벤트별 커스텀 도메인 지원
 
 ### 2. Payment Dual System
 - **B2B (Invoice)**: 플랫폼 구독료 관리
@@ -876,13 +1173,31 @@ erDiagram
 - **JSON fields**: settings, metadata로 유연한 확장
 - **Custom forms**: 기관별 커스텀 등록 폼
 - **Email templates**: 다양한 이메일 템플릿 지원
+- **Discount codes**: 프로모션 코드 시스템
+- **SMS integration**: SMS 발송 기록 및 관리
 
 ### 4. Performance Optimization
 - **Indexes**: 주요 쿼리 패턴에 맞는 인덱스 설계
 - **Soft deletes**: isActive 플래그로 소프트 삭제
 - **Counter cache**: totalRegistrations, currentCount 등 카운터 캐시
+- **Storage management**: 파일 업로드 및 용량 관리
 
-### 5. Audit & Compliance
+### 5. Queue Management
+- **Waitlist system**: 프로그램별 대기자 관리
+- **Priority handling**: 우선순위 기반 대기 처리
+- **Auto-notification**: 자동 알림 시스템
+
+### 6. Advanced Domain Management
+- **Multi-level domains**: 기관별/이벤트별 커스텀 도메인 지원
+- **Automatic verification**: DNS TXT 레코드를 통한 자동 도메인 검증
+- **SSL management**: 자동 SSL 인증서 발급 및 갱신
+- **Domain-specific branding**: 도메인별 독립적인 브랜딩 설정
+- **Redirect handling**: 유연한 리다이렉트 및 HTTPS 강제 설정
+
+### 7. Audit & Compliance
 - **Activity logs**: 모든 중요 활동 기록
 - **Webhook logs**: 결제 이벤트 추적
+- **SMS logs**: 메시지 발송 내역 추적
+- **File upload tracking**: 파일 업로드 이력 관리
+- **Domain verification logs**: 도메인 검증 및 SSL 이력 관리
 - **Data retention**: 법적 요구사항 준수

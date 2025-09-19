@@ -1,8 +1,6 @@
 ---
-alwaysApply: true
-description: "UBF 이벤트 시스템 아키텍처 및 개발 가이드"
+alwaysApply: false
 ---
-
 # UBF Event System - Architecture & Development Guide
 
 이 규칙은 Korea UBF WMC Registration System 개발 시 항상 참조해야 할 아키텍처 및 개발 가이드입니다.
@@ -70,7 +68,6 @@ Payments:
 
 ## 🚫 금지 사항
 
-- `php artisan migrate:fresh` 절대 실행 금지
 - 직접 데이터베이스 접근 금지 (Prisma 사용 필수)
 - 카드번호 등 민감정보 저장 금지
 - `/app/demo/` 디렉토리 삭제 금지
