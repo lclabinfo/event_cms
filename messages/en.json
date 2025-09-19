@@ -9,6 +9,9 @@
     "login": "Login",
     "logout": "Logout",
     "home": "Home",
+    "schedule": "Schedule",
+    "speakers": "Speakers",
+    "venue": "Venue",
     "events": "Events",
     "about": "About",
     "contact": "Contact"

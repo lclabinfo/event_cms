@@ -9,6 +9,9 @@
     "login": "로그인",
     "logout": "로그아웃",
     "home": "홈",
+    "schedule": "일정",
+    "speakers": "강연자",
+    "venue": "장소",
     "events": "이벤트",
     "about": "소개",
     "contact": "연락처"

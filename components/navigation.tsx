@@ -21,22 +21,22 @@ export function Navigation() {
                 {t('home')}
               </Link>
               <Link
-                href="/events"
+                href="/schedule"
                 className="text-gray-700 hover:text-blue-600 transition-colors"
               >
-                {t('events')}
+                {t('schedule')}
               </Link>
               <Link
-                href="/about"
+                href="/speakers"
                 className="text-gray-700 hover:text-blue-600 transition-colors"
               >
-                {t('about')}
+                {t('speakers')}
               </Link>
               <Link
-                href="/contact"
+                href="/venue"
                 className="text-gray-700 hover:text-blue-600 transition-colors"
               >
-                {t('contact')}
+                {t('venue')}
               </Link>
             </div>
           </div>

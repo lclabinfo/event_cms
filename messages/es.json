@@ -9,6 +9,9 @@
     "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
     "home": "Inicio",
+    "schedule": "Programa",
+    "speakers": "Oradores",
+    "venue": "Lugar",
     "events": "Eventos",
     "about": "Acerca de",
     "contact": "Contacto"
