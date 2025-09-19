@@ -42,7 +42,10 @@ church-event/
 ├── app/                    # Next.js App Router
 │   ├── [locale]/          # i18n routing (ko/en/es)
 │   ├── api/               # API routes & tRPC
-│   └── admin/             # Admin panel
+│   ├── admin/             # Admin panel
+│   └── demo/              # 🔬 Component testing playground (DO NOT DELETE)
+│       ├── components/    # Component gallery
+│       └── playground/    # Interactive testing
 ├── components/            # React components
 │   ├── ui/               # Shadcn/ui base components
 │   ├── forms/            # Form components
@@ -147,6 +150,7 @@ Cost-effective options:
 - **Don't** store sensitive data (card numbers) in database
 - **Don't** skip validation on user inputs
 - **Don't** create API endpoints without tRPC
+- **Don't** delete `/app/demo/` directory - it's for component testing and validation
 
 ## 🤝 Team Collaboration
 
