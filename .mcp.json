@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "postgresql": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://peter:peter995@localhost:5432/ubf_event"
+      ]
+    }
+  }
+}

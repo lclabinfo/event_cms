@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "postgresql": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://peter:peter995@localhost:5432/ubf_event"
+      ]
+    },
+    "ssh-mcp": {
+      "command": "npx",
+      "args": [
+        "ssh-mcp",
+        "-y",
+        "--",
+        "--host=20.127.186.107",
+        "--port=22",
+        "--user=azureuser",        
+        "--key=/home/peterlim/.ssh/digital-church-key.pem",
+        "--timeout=30000"
+      ]
+    }
+  }
+}
