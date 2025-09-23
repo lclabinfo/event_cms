@@ -5,7 +5,7 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-postgres",
-        "postgresql://peter:peter995@localhost:5432/ubf_event"
+        "postgresql://peterlim@localhost:5432/event_cms_dev"
       ]
     },
     "ssh-mcp": {

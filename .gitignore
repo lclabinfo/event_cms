@@ -43,5 +43,15 @@ next-env.d.ts
 *.swp
 *.swo
 
+# Cursor IDE
+.cursor/
+*.cursor-*
+.cursor-*
+
+# Claude Code / MCP
+.claude/
+.mcp.json
+*.claude-*
+
 # OS
 Thumbs.db
