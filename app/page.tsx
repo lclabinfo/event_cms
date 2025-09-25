@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Users, Globe, Shield, BarChart, Zap } from 'lucide-react';
+import { Calendar, Users, Globe, Shield, BarChart, Zap, Settings } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -230,6 +230,35 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
+              <p className="text-sm text-gray-400">
+                © 2025 Event Platform. All rights reserved.
+              </p>
+            </div>
+            <div className="flex items-center space-x-6">
+              <Link href="/terms" className="text-sm text-gray-400 hover:text-white">
+                이용약관
+              </Link>
+              <Link href="/privacy" className="text-sm text-gray-400 hover:text-white">
+                개인정보처리방침
+              </Link>
+              <Link
+                href="/admin"
+                className="inline-flex items-center text-sm text-gray-400 hover:text-white"
+                title="플랫폼 관리자"
+              >
+                <Settings className="h-4 w-4" />
+                <span className="ml-1">관리자</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

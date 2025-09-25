@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Calendar, MapPin, Users, Globe } from 'lucide-react';
+import { Calendar, MapPin, Users, Globe, Settings } from 'lucide-react';
 import { headers } from 'next/headers';
 
 interface Props {
@@ -226,6 +226,41 @@ export default async function OrganizationPage({ params }: Props) {
           </Card>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
+              <p className="text-sm text-gray-400">
+                © 2025 {organization.name}. All rights reserved.
+              </p>
+              {organization.email && (
+                <p className="text-sm text-gray-400 mt-1">
+                  문의: {organization.email}
+                  {organization.phone && ` | ${organization.phone}`}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center space-x-6">
+              <Link href="/terms" className="text-sm text-gray-400 hover:text-white">
+                이용약관
+              </Link>
+              <Link href="/privacy" className="text-sm text-gray-400 hover:text-white">
+                개인정보처리방침
+              </Link>
+              <Link
+                href={`/${params.orgSlug}/admin`}
+                className="inline-flex items-center text-sm text-gray-400 hover:text-white"
+                title="기관 관리자"
+              >
+                <Settings className="h-4 w-4" />
+                <span className="ml-1">관리자</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
