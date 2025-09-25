@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,97 +7,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ═══════════════════════════════════════════════════
-// User & Authentication
-// ═══════════════════════════════════════════════════
-
-enum UserRole {
-  SUPER_ADMIN     // 플랫폼 운영자 (SaaS 판매자)
-  ORG_OWNER       // 기관 소유자 (구매 결정권자)
-  ORG_ADMIN       // 기관 관리자 (행사 생성/관리)
-  ORG_STAFF       // 기관 스태프 (제한된 권한)
-  PARTICIPANT     // 일반 참가자
-}
-
 model User {
-  id                String    @id @default(uuid())
-  email             String    @unique
-  name              String
-  password          String?   // OAuth 사용자는 null
-  role              UserRole  @default(PARTICIPANT)
-  emailVerified     DateTime?
-  phone             String?
-  profileImage      String?
-  lastLoginAt       DateTime?
-  isActive          Boolean   @default(true)
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  // Relations
-  ownedOrganizations    Organization[]  @relation("OrgOwner")
-  organizationMembers   OrganizationMember[]
-  createdEvents         Event[]         @relation("EventCreator")
-  registrations         Registration[]
-  activityLogs          ActivityLog[]
-  notifications         Notification[]
-  accounts              Account[]
-  sessions              Session[]
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  name                String
+  password            String?
+  role                UserRole             @default(PARTICIPANT)
+  emailVerified       DateTime?
+  phone               String?
+  profileImage        String?
+  lastLoginAt         DateTime?
+  isActive            Boolean              @default(true)
+  metadata            Json                 @default("{}")
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  accounts            Account[]
+  activityLogs        ActivityLog[]
+  createdEvents       Event[]              @relation("EventCreator")
+  notifications       Notification[]
+  ownedOrganizations  Organization[]       @relation("OrgOwner")
+  organizationMembers OrganizationMember[]
+  registrations       Registration[]
+  sessions            Session[]
 }
 
 model OrganizationMember {
-  id            String      @id @default(uuid())
-  userId        String
-  orgId         String
-  role          UserRole    // 기관 내 역할
-  permissions   Json        // 세부 권한 설정
-  invitedBy     String?
-  invitedAt     DateTime?
-  acceptedAt    DateTime?
-  isActive      Boolean     @default(true)
-
-  user          User        @relation(fields: [userId], references: [id])
-  organization  Organization @relation(fields: [orgId], references: [id])
+  id           String       @id @default(uuid())
+  userId       String
+  orgId        String
+  role         UserRole
+  permissions  Json
+  invitedBy    String?
+  invitedAt    DateTime?
+  acceptedAt   DateTime?
+  isActive     Boolean      @default(true)
+  organization Organization @relation(fields: [orgId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
 
   @@unique([userId, orgId])
   @@index([orgId])
   @@index([userId])
 }
 
-// NextAuth Account model
 model Account {
   id                String  @id @default(uuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
 }
 
-// NextAuth Session model
 model Session {
   id           String   @id @default(uuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
-// NextAuth Verification Token model
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -109,176 +86,111 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// ═══════════════════════════════════════════════════
-// Organization & Subscription
-// ═══════════════════════════════════════════════════
-
-enum SubscriptionPlan {
-  FREE        // 무료 (1개 행사, 50명)
-  BASIC       // 기본 (3개 행사, 200명)
-  PRO         // 프로 (10개 행사, 1000명)
-  ENTERPRISE  // 기업 (무제한, 커스텀)
-}
-
-enum SubscriptionStatus {
-  TRIAL
-  ACTIVE
-  PAST_DUE
-  CANCELLED
-  SUSPENDED
-}
-
 model Organization {
-  id                String    @id @default(uuid())
-  slug              String    @unique  // URL용 고유 식별자
-  name              String
-  nameEn            String?
-  description       String?   @db.Text
-
-  // 소유자 정보
-  ownerId           String
-  owner             User      @relation("OrgOwner", fields: [ownerId], references: [id])
-
-  // 브랜딩 & 커스터마이징
-  logo              String?
-  favicon           String?
-  primaryColor      String    @default("#000000")
-  customDomain      String?   @unique
-  domainVerified    Boolean   @default(false)
-
-  // 연락처 정보
-  email             String
-  phone             String?
-  address           Json?
-  timezone          String    @default("Asia/Seoul")
-  locale            String    @default("ko")
-
-  // 설정
-  settings          Json      @default("{}")
-  features          Json      @default("{}")
-  isActive          Boolean   @default(true)
-  isVerified        Boolean   @default(false)
-
-  // 스토리지 관리
-  storageUsed       BigInt    @default(0)
-
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  // Relations
-  subscription      Subscription?
-  members           OrganizationMember[]
-  events            Event[]
-  paymentAccounts   PaymentAccount[]
-  emailTemplates    EmailTemplate[]
-  customForms       CustomForm[]
-  activityLogs      ActivityLog[]
-  smsLogs           SmsLog[]
-  fileUploads       FileUpload[]
-  customDomains     CustomDomain[]
+  id              String               @id @default(uuid())
+  slug            String               @unique
+  name            String
+  nameEn          String?
+  description     String?
+  ownerId         String
+  logo            String?
+  favicon         String?
+  primaryColor    String               @default("#000000")
+  email           String
+  phone           String?
+  address         Json?
+  timezone        String               @default("Asia/Seoul")
+  locale          String               @default("ko")
+  settings        Json                 @default("{}")
+  features        Json                 @default("{}")
+  isActive        Boolean              @default(true)
+  isVerified      Boolean              @default(false)
+  storageUsed     BigInt               @default(0)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  activityLogs    ActivityLog[]
+  customDomains   CustomDomain[]
+  customForms     CustomForm[]
+  emailTemplates  EmailTemplate[]
+  events          Event[]
+  fileUploads     FileUpload[]
+  owner           User                 @relation("OrgOwner", fields: [ownerId], references: [id])
+  members         OrganizationMember[]
+  paymentAccounts PaymentAccount[]
+  smsLogs         SmsLog[]
+  subscription    Subscription?
 }
 
 model Subscription {
-  id                String              @id @default(uuid())
-  orgId             String              @unique
-  plan              SubscriptionPlan    @default(FREE)
-  status            SubscriptionStatus  @default(TRIAL)
-
-  // 구독 기간
-  trialEndsAt       DateTime?
+  id                 String             @id @default(uuid())
+  orgId              String             @unique
+  plan               SubscriptionPlan   @default(FREE)
+  status             SubscriptionStatus @default(TRIAL)
+  trialEndsAt        DateTime?
   currentPeriodStart DateTime
-  currentPeriodEnd  DateTime
-  cancelledAt       DateTime?
-
-  // 제한 사항
-  maxEvents         Int
-  maxParticipants   Int
-  maxAdmins         Int                 @default(5)
-  storageLimit      BigInt
-
-  // 결제 정보
-  billingCycle      String              @default("monthly")
-  price             Decimal             @db.Decimal(10, 2)
-  currency          String              @default("KRW")
-
-  // 기능 플래그
-  features          Json                @default("{}")
-
-  metadata          Json                @default("{}")
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-
-  organization      Organization        @relation(fields: [orgId], references: [id])
-  invoices          Invoice[]
+  currentPeriodEnd   DateTime
+  cancelledAt        DateTime?
+  maxEvents          Int
+  maxParticipants    Int
+  maxAdmins          Int                @default(5)
+  storageLimit       BigInt
+  billingCycle       String             @default("monthly")
+  price              Decimal            @db.Decimal(10, 2)
+  currency           String             @default("KRW")
+  features           Json               @default("{}")
+  metadata           Json               @default("{}")
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  invoices           Invoice[]
+  organization       Organization       @relation(fields: [orgId], references: [id])
 }
 
-// ═══════════════════════════════════════════════════
-// Event Management
-// ═══════════════════════════════════════════════════
-
 model Event {
-  id                String    @id @default(uuid())
-  orgId             String
-  slug              String
-
-  // 기본 정보
-  title             String
-  titleEn           String?
-  description       String?   @db.Text
-  descriptionEn     String?   @db.Text
-
-  // 일정
-  startDate         DateTime
-  endDate           DateTime
-  registrationStart DateTime
-  registrationEnd   DateTime
-  earlyBirdEnd      DateTime?
-
-  // 장소
-  venue             String?
-  venueAddress      Json?
-  onlineUrl         String?
-
-  // 제한 & 가격
-  maxParticipants   Int?
-  basePrice         Decimal   @db.Decimal(10, 2)
-  earlyBirdPrice    Decimal?  @db.Decimal(10, 2)
-  currency          String    @default("KRW")
-
-  // 상태 & 설정
-  status            String    @default("draft")
-  visibility        String    @default("public")
-  requiresApproval  Boolean   @default(false)
-
-  // 커스터마이징
-  customFormId      String?
-  emailTemplateIds  Json      @default("[]")
-  tags              String[]
-
-  // 도메인 & 브랜딩
-  customDomain      String?   @unique
-  domainVerified    Boolean   @default(false)
-  customBranding    Json?
-
-  // 통계
-  totalRegistrations Int      @default(0)
-  totalRevenue      Decimal   @default(0) @db.Decimal(10, 2)
-
-  // 생성자 정보
-  createdBy         String
-  creator           User      @relation("EventCreator", fields: [createdBy], references: [id])
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  organization      Organization @relation(fields: [orgId], references: [id])
-  programs          Program[]
-  registrations     Registration[]
-  customForm        CustomForm?  @relation(fields: [customFormId], references: [id])
-  discountCodes     DiscountCode[]
-  fileUploads       FileUpload[]
-  customDomains     CustomDomain[]
+  id                 String         @id @default(uuid())
+  orgId              String
+  slug               String
+  title              String
+  titleEn            String?
+  description        String?
+  descriptionEn      String?
+  startDate          DateTime
+  endDate            DateTime
+  registrationStart  DateTime
+  registrationEnd    DateTime
+  earlyBirdEnd       DateTime?
+  venue              String?
+  venueAddress       Json?
+  onlineUrl          String?
+  maxParticipants    Int?
+  basePrice          Decimal        @db.Decimal(10, 2)
+  earlyBirdPrice     Decimal?       @db.Decimal(10, 2)
+  currency           String         @default("KRW")
+  status             String         @default("draft")
+  visibility         String         @default("public")
+  requiresApproval   Boolean        @default(false)
+  customFormId       String?
+  emailTemplateIds   Json           @default("[]")
+  tags               String[]
+  customBranding     Json?
+  totalRegistrations Int            @default(0)
+  totalRevenue       Decimal        @default(0) @db.Decimal(10, 2)
+  createdBy          String
+  metadata           Json           @default("{}")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  defaultLocale      String         @default("ko")
+  isMultiLanguage    Boolean        @default(false)
+  supportedLocales   String[]       @default(["ko"])
+  customDomains      CustomDomain[]
+  discountCodes      DiscountCode[]
+  creator            User           @relation("EventCreator", fields: [createdBy], references: [id])
+  customForm         CustomForm?    @relation(fields: [customFormId], references: [id])
+  organization       Organization   @relation(fields: [orgId], references: [id])
+  fileUploads        FileUpload[]
+  programs           Program[]
+  registrations      Registration[]
+  pages              EventPage[]
+  menus              EventMenu[]
 
   @@unique([orgId, slug])
   @@index([orgId])
@@ -287,74 +199,512 @@ model Event {
 }
 
 model Program {
-  id                String    @id @default(uuid())
-  eventId           String
-  code              String
-
-  title             String
-  titleEn           String?
-  description       String?   @db.Text
-
-  // 일정 & 장소
-  startTime         DateTime
-  endTime           DateTime
-  location          String?
-
-  // 제한 & 가격
-  maxCapacity       Int?
-  currentCount      Int       @default(0)
-  price             Decimal?  @db.Decimal(10, 2)
-
-  // 옵션
-  isRequired        Boolean   @default(false)
-  allowWaitlist     Boolean   @default(false)
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  event             Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  participations    ProgramParticipation[]
-  waitlists         Waitlist[]
+  id             String                 @id @default(uuid())
+  eventId        String
+  code           String
+  title          String
+  titleEn        String?
+  description    String?
+  startTime      DateTime
+  endTime        DateTime
+  location       String?
+  maxCapacity    Int?
+  currentCount   Int                    @default(0)
+  price          Decimal?               @db.Decimal(10, 2)
+  isRequired     Boolean                @default(false)
+  allowWaitlist  Boolean                @default(false)
+  metadata       Json                   @default("{}")
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  event          Event                  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  participations ProgramParticipation[]
+  waitlists      Waitlist[]
 
   @@unique([eventId, code])
   @@index([eventId])
 }
 
 model DiscountCode {
-  id                String    @id @default(uuid())
-  eventId           String
-  code              String    @unique
-  description       String?
-
-  // 할인 정보
-  discountType      String
-  discountValue     Decimal   @db.Decimal(10, 2)
-
-  // 사용 제한
-  maxUses           Int?
-  currentUses       Int       @default(0)
-  maxUsesPerUser    Int       @default(1)
-
-  // 유효 기간
-  validFrom         DateTime
-  validUntil        DateTime
-
-  // 적용 조건
-  conditions        Json?
-  minAmount         Decimal?  @db.Decimal(10, 2)
-
-  isActive          Boolean   @default(true)
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  event             Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  eventId        String
+  code           String   @unique
+  description    String?
+  discountType   String
+  discountValue  Decimal  @db.Decimal(10, 2)
+  maxUses        Int?
+  currentUses    Int      @default(0)
+  maxUsesPerUser Int      @default(1)
+  validFrom      DateTime
+  validUntil     DateTime
+  conditions     Json?
+  minAmount      Decimal? @db.Decimal(10, 2)
+  isActive       Boolean  @default(true)
+  metadata       Json     @default("{}")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@index([eventId])
   @@index([code])
   @@index([validFrom, validUntil])
+}
+
+model CustomDomain {
+  id                String       @id @default(uuid())
+  orgId             String
+  eventId           String?
+  domain            String       @unique
+  type              DomainType
+  isPrimary         Boolean      @default(false)
+  status            DomainStatus @default(PENDING)
+  verificationToken String?
+  verifiedAt        DateTime?
+  sslEnabled        Boolean      @default(false)
+  sslStatus         String?
+  certificateId     String?
+  sslIssuedAt       DateTime?
+  sslExpiresAt      DateTime?
+  redirectTo        String?
+  redirectType      Int          @default(301)
+  forceHttps        Boolean      @default(true)
+  dnsRecords        Json?
+  lastDnsCheck      DateTime?
+  customBranding    Json?
+  metadata          Json         @default("{}")
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  event             Event?       @relation(fields: [eventId], references: [id])
+  organization      Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId])
+  @@index([eventId])
+  @@index([domain])
+  @@index([status])
+}
+
+model Registration {
+  id                    String                 @id @default(uuid())
+  eventId               String
+  userId                String?
+  registrationNumber    String                 @unique @default(cuid())
+  type                  String                 @default("individual")
+  groupName             String?
+  groupSize             Int                    @default(1)
+  name                  String
+  email                 String
+  phone                 String
+  baseAmount            Decimal                @db.Decimal(10, 2)
+  discountAmount        Decimal                @default(0) @db.Decimal(10, 2)
+  discountReason        String?
+  taxAmount             Decimal                @default(0) @db.Decimal(10, 2)
+  totalAmount           Decimal                @db.Decimal(10, 2)
+  status                String                 @default("pending")
+  requiresApproval      Boolean                @default(false)
+  approvedAt            DateTime?
+  approvedBy            String?
+  customFormData        Json?
+  notes                 String?
+  internalNotes         String?
+  qrCode                String?                @unique
+  checkedInAt           DateTime?
+  checkedInBy           String?
+  metadata              Json                   @default("{}")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  fileUploads           FileUpload[]
+  participants          Participant[]
+  payment               Payment?
+  programParticipations ProgramParticipation[]
+  event                 Event                  @relation(fields: [eventId], references: [id])
+  user                  User?                  @relation(fields: [userId], references: [id])
+  waitlists             Waitlist[]
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([email])
+  @@index([status])
+}
+
+model Participant {
+  id                  String       @id @default(uuid())
+  registrationId      String
+  firstName           String
+  lastName            String
+  firstNameEn         String?
+  lastNameEn          String?
+  email               String
+  phone               String
+  birthDate           DateTime?
+  gender              String?
+  nationality         String?
+  organization        String?
+  position            String?
+  passportNumber      String?
+  passportExpiry      DateTime?
+  visaRequired        Boolean      @default(false)
+  visaStatus          String?
+  dietaryRestrictions String?
+  allergies           String?
+  specialNeeds        String?
+  emergencyContact    Json?
+  checkedIn           Boolean      @default(false)
+  checkedInAt         DateTime?
+  metadata            Json         @default("{}")
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  registration        Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId])
+  @@index([email])
+}
+
+model ProgramParticipation {
+  id             String       @id @default(uuid())
+  programId      String
+  registrationId String
+  status         String       @default("registered")
+  attendedAt     DateTime?
+  program        Program      @relation(fields: [programId], references: [id])
+  registration   Registration @relation(fields: [registrationId], references: [id])
+
+  @@unique([programId, registrationId])
+  @@index([programId])
+  @@index([registrationId])
+}
+
+model Waitlist {
+  id                String       @id @default(uuid())
+  programId         String
+  registrationId    String
+  position          Int
+  priority          Int          @default(0)
+  notifiedAt        DateTime?
+  notificationCount Int          @default(0)
+  expiresAt         DateTime?
+  status            String       @default("waiting")
+  confirmedAt       DateTime?
+  cancelledAt       DateTime?
+  cancelReason      String?
+  metadata          Json         @default("{}")
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  program           Program      @relation(fields: [programId], references: [id], onDelete: Cascade)
+  registration      Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@unique([programId, registrationId])
+  @@index([programId, status, position])
+  @@index([registrationId])
+}
+
+model Invoice {
+  id                 String       @id @default(uuid())
+  subscriptionId     String
+  invoiceNumber      String       @unique
+  amount             Decimal      @db.Decimal(10, 2)
+  tax                Decimal      @db.Decimal(10, 2)
+  totalAmount        Decimal      @db.Decimal(10, 2)
+  currency           String       @default("KRW")
+  status             String       @default("pending")
+  dueDate            DateTime
+  paidAt             DateTime?
+  taxInvoiceNumber   String?
+  taxInvoiceIssuedAt DateTime?
+  paymentMethod      String?
+  paymentId          String?
+  metadata           Json         @default("{}")
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  subscription       Subscription @relation(fields: [subscriptionId], references: [id])
+}
+
+model PaymentAccount {
+  id            String       @id @default(uuid())
+  orgId         String
+  provider      String
+  isActive      Boolean      @default(true)
+  isDefault     Boolean      @default(false)
+  merchantId    String?
+  apiKey        String?
+  secretKey     String?
+  webhookSecret String?
+  bankName      String?
+  bankAccount   String?
+  accountHolder String?
+  settings      Json         @default("{}")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  organization  Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([orgId, provider])
+  @@index([orgId])
+}
+
+model Payment {
+  id               String       @id @default(uuid())
+  registrationId   String       @unique
+  amount           Decimal      @db.Decimal(10, 2)
+  currency         String       @default("KRW")
+  method           String
+  provider         String
+  providerId       String?
+  providerResponse Json?
+  status           String       @default("pending")
+  refundAmount     Decimal?     @db.Decimal(10, 2)
+  refundReason     String?
+  refundedAt       DateTime?
+  refundId         String?
+  receiptUrl       String?
+  invoiceNumber    String?
+  metadata         Json         @default("{}")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  registration     Registration @relation(fields: [registrationId], references: [id])
+  webhookLogs      WebhookLog[]
+
+  @@index([status])
+  @@index([providerId])
+}
+
+model WebhookLog {
+  id          String    @id @default(uuid())
+  paymentId   String?
+  provider    String
+  eventType   String
+  payload     Json
+  processed   Boolean   @default(false)
+  processedAt DateTime?
+  error       String?
+  createdAt   DateTime  @default(now())
+  payment     Payment?  @relation(fields: [paymentId], references: [id])
+
+  @@index([paymentId])
+  @@index([provider, eventType])
+}
+
+model EmailTemplate {
+  id           String       @id @default(uuid())
+  orgId        String
+  name         String
+  subject      String
+  bodyHtml     String
+  bodyText     String?
+  type         String
+  variables    Json         @default("[]")
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([orgId, type])
+  @@index([orgId])
+}
+
+model CustomForm {
+  id           String       @id @default(uuid())
+  orgId        String
+  name         String
+  description  String?
+  fields       Json
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  organization Organization @relation(fields: [orgId], references: [id])
+  events       Event[]
+
+  @@index([orgId])
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  userId      String
+  type        String
+  title       String
+  content     String
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  relatedType String?
+  relatedId   String?
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@index([relatedType, relatedId])
+}
+
+model SmsLog {
+  id             String       @id @default(uuid())
+  orgId          String
+  recipient      String
+  recipientName  String?
+  registrationId String?
+  eventId        String?
+  message        String
+  messageType    String
+  templateId     String?
+  provider       String
+  providerId     String?
+  status         String       @default("pending")
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  failedAt       DateTime?
+  failureReason  String?
+  cost           Decimal?     @db.Decimal(10, 2)
+  metadata       Json         @default("{}")
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId])
+  @@index([registrationId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model FileUpload {
+  id              String        @id @default(uuid())
+  orgId           String
+  fileName        String
+  originalName    String
+  fileType        String
+  mimeType        String
+  fileSize        BigInt
+  storageProvider String        @default("local")
+  filePath        String
+  fileUrl         String
+  thumbnailUrl    String?
+  entityType      String?
+  entityId        String?
+  eventId         String?
+  registrationId  String?
+  uploadedBy      String
+  uploadedAt      DateTime      @default(now())
+  isPublic        Boolean       @default(false)
+  isDeleted       Boolean       @default(false)
+  deletedAt       DateTime?
+  virusScanStatus String?
+  virusScanAt     DateTime?
+  metadata        Json          @default("{}")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  event           Event?        @relation(fields: [eventId], references: [id])
+  organization    Organization  @relation(fields: [orgId], references: [id])
+  registration    Registration? @relation(fields: [registrationId], references: [id])
+
+  @@index([orgId])
+  @@index([entityType, entityId])
+  @@index([uploadedBy])
+  @@index([isDeleted])
+}
+
+model ActivityLog {
+  id           String        @id @default(uuid())
+  userId       String
+  orgId        String?
+  action       String
+  entityType   String
+  entityId     String?
+  oldValues    Json?
+  newValues    Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime      @default(now())
+  organization Organization? @relation(fields: [orgId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([orgId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model Analytics {
+  id                    String   @id @default(uuid())
+  orgId                 String
+  eventId               String?
+  date                  DateTime @db.Date
+  pageViews             Int      @default(0)
+  uniqueVisitors        Int      @default(0)
+  registrationStarts    Int      @default(0)
+  registrationCompletes Int      @default(0)
+  revenue               Decimal  @default(0) @db.Decimal(10, 2)
+  hourlyData            Json?
+  sourceData            Json?
+  deviceData            Json?
+  createdAt             DateTime @default(now())
+
+  @@unique([orgId, eventId, date])
+  @@index([orgId])
+  @@index([eventId])
+  @@index([date])
+}
+
+model EventPage {
+  id        String   @id @default(uuid())
+  eventId   String
+  slug      String
+  title     Json     // Multi-language support {"ko": "한국어", "en": "English"}
+  content   Json     // Multi-language content
+  order     Int      @default(0)
+  isVisible Boolean  @default(true)
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  menus EventMenu[]
+
+  @@unique([eventId, slug])
+  @@index([eventId])
+  @@index([slug])
+}
+
+model EventMenu {
+  id        String   @id @default(uuid())
+  eventId   String
+  title     Json     // Multi-language support {"ko": "한국어", "en": "English"}
+  url       String?
+  pageId    String?
+  order     Int      @default(0)
+  parentId  String?
+  isVisible Boolean  @default(true)
+  type      String   @default("link") // "link", "page", "dropdown"
+  icon      String?
+  target    String   @default("_self") // "_self", "_blank"
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event  Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  page   EventPage? @relation(fields: [pageId], references: [id])
+  parent EventMenu? @relation("MenuHierarchy", fields: [parentId], references: [id])
+  children EventMenu[] @relation("MenuHierarchy")
+
+  @@index([eventId])
+  @@index([parentId])
+  @@index([order])
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ORG_OWNER
+  ORG_ADMIN
+  ORG_STAFF
+  PARTICIPANT
+}
+
+enum SubscriptionPlan {
+  FREE
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  SUSPENDED
 }
 
 enum DomainType {
@@ -369,559 +719,4 @@ enum DomainStatus {
   FAILED
   EXPIRED
   SUSPENDED
-}
-
-model CustomDomain {
-  id                String       @id @default(uuid())
-
-  // 연결 정보
-  orgId             String
-  eventId           String?
-
-  // 도메인 정보
-  domain            String       @unique
-  type              DomainType
-  isPrimary         Boolean      @default(false)
-
-  // 검증 상태
-  status            DomainStatus @default(PENDING)
-  verificationToken String?
-  verifiedAt        DateTime?
-
-  // SSL 설정
-  sslEnabled        Boolean      @default(false)
-  sslStatus         String?
-  certificateId     String?
-  sslIssuedAt       DateTime?
-  sslExpiresAt      DateTime?
-
-  // 리다이렉트 설정
-  redirectTo        String?
-  redirectType      Int         @default(301)
-  forceHttps        Boolean     @default(true)
-
-  // DNS 설정
-  dnsRecords        Json?
-  lastDnsCheck      DateTime?
-
-  // 브랜딩 오버라이드
-  customBranding    Json?
-
-  metadata          Json        @default("{}")
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-
-  organization      Organization @relation(fields: [orgId], references: [id])
-  event             Event?       @relation(fields: [eventId], references: [id])
-
-  @@index([orgId])
-  @@index([eventId])
-  @@index([domain])
-  @@index([status])
-}
-
-// ═══════════════════════════════════════════════════
-// Registration & Participants
-// ═══════════════════════════════════════════════════
-
-model Registration {
-  id                String    @id @default(uuid())
-  eventId           String
-  userId            String?
-
-  // 등록 정보
-  registrationNumber String   @unique @default(cuid())
-  type              String    @default("individual")
-  groupName         String?
-  groupSize         Int       @default(1)
-
-  // 참가자 정보 (비회원용)
-  name              String
-  email             String
-  phone             String
-
-  // 가격 정보
-  baseAmount        Decimal   @db.Decimal(10, 2)
-  discountAmount    Decimal   @default(0) @db.Decimal(10, 2)
-  discountReason    String?
-  taxAmount         Decimal   @default(0) @db.Decimal(10, 2)
-  totalAmount       Decimal   @db.Decimal(10, 2)
-
-  // 상태
-  status            String    @default("pending")
-
-  // 승인 처리
-  requiresApproval  Boolean   @default(false)
-  approvedAt        DateTime?
-  approvedBy        String?
-
-  // 추가 정보
-  customFormData    Json?
-  notes             String?   @db.Text
-  internalNotes     String?   @db.Text
-
-  // QR/바코드
-  qrCode            String?   @unique
-  checkedInAt       DateTime?
-  checkedInBy       String?
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  event             Event     @relation(fields: [eventId], references: [id])
-  user              User?     @relation(fields: [userId], references: [id])
-  payment           Payment?
-  participants      Participant[]
-  programParticipations ProgramParticipation[]
-  waitlists         Waitlist[]
-  fileUploads       FileUpload[]
-
-  @@index([eventId])
-  @@index([userId])
-  @@index([email])
-  @@index([status])
-}
-
-model Participant {
-  id                String    @id @default(uuid())
-  registrationId    String
-
-  // 개인 정보
-  firstName         String
-  lastName          String
-  firstNameEn       String?
-  lastNameEn        String?
-  email             String
-  phone             String
-
-  // 추가 정보
-  birthDate         DateTime?
-  gender            String?
-  nationality       String?
-  organization      String?
-  position          String?
-
-  // 여행 정보
-  passportNumber    String?
-  passportExpiry    DateTime?
-  visaRequired      Boolean   @default(false)
-  visaStatus        String?
-
-  // 특별 요구사항
-  dietaryRestrictions String?
-  allergies         String?
-  specialNeeds      String?
-  emergencyContact  Json?
-
-  // 체크인
-  checkedIn         Boolean   @default(false)
-  checkedInAt       DateTime?
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  registration      Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-
-  @@index([registrationId])
-  @@index([email])
-}
-
-model ProgramParticipation {
-  id                String    @id @default(uuid())
-  programId         String
-  registrationId    String
-
-  status            String    @default("registered")
-  attendedAt        DateTime?
-
-  program           Program   @relation(fields: [programId], references: [id])
-  registration      Registration @relation(fields: [registrationId], references: [id])
-
-  @@unique([programId, registrationId])
-  @@index([programId])
-  @@index([registrationId])
-}
-
-model Waitlist {
-  id                String    @id @default(uuid())
-  programId         String
-  registrationId    String
-
-  // 대기 정보
-  position          Int
-  priority          Int       @default(0)
-
-  // 알림 및 처리
-  notifiedAt        DateTime?
-  notificationCount Int       @default(0)
-  expiresAt         DateTime?
-
-  // 상태 변경
-  status            String    @default("waiting")
-  confirmedAt       DateTime?
-  cancelledAt       DateTime?
-  cancelReason      String?
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  program           Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
-  registration      Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-
-  @@unique([programId, registrationId])
-  @@index([programId, status, position])
-  @@index([registrationId])
-}
-
-// ═══════════════════════════════════════════════════
-// Payment System
-// ═══════════════════════════════════════════════════
-
-model Invoice {
-  id                String    @id @default(uuid())
-  subscriptionId    String
-  invoiceNumber     String    @unique
-
-  // 청구 정보
-  amount            Decimal   @db.Decimal(10, 2)
-  tax               Decimal   @db.Decimal(10, 2)
-  totalAmount       Decimal   @db.Decimal(10, 2)
-  currency          String    @default("KRW")
-
-  // 상태
-  status            String    @default("pending")
-  dueDate           DateTime
-  paidAt            DateTime?
-
-  // 세금계산서
-  taxInvoiceNumber  String?
-  taxInvoiceIssuedAt DateTime?
-
-  // 결제 정보
-  paymentMethod     String?
-  paymentId         String?
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  subscription      Subscription @relation(fields: [subscriptionId], references: [id])
-}
-
-model PaymentAccount {
-  id                String    @id @default(uuid())
-  orgId             String
-  provider          String
-  isActive          Boolean   @default(true)
-  isDefault         Boolean   @default(false)
-
-  // Provider 별 설정
-  merchantId        String?
-  apiKey            String?   @db.Text
-  secretKey         String?   @db.Text
-  webhookSecret     String?   @db.Text
-
-  // 정산 정보
-  bankName          String?
-  bankAccount       String?
-  accountHolder     String?
-
-  settings          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  organization      Organization @relation(fields: [orgId], references: [id])
-
-  @@unique([orgId, provider])
-  @@index([orgId])
-}
-
-model Payment {
-  id                String    @id @default(uuid())
-  registrationId    String    @unique
-
-  // 결제 정보
-  amount            Decimal   @db.Decimal(10, 2)
-  currency          String    @default("KRW")
-  method            String
-
-  // 제공자 정보
-  provider          String
-  providerId        String?
-  providerResponse  Json?
-
-  // 상태
-  status            String    @default("pending")
-
-  // 환불 정보
-  refundAmount      Decimal?  @db.Decimal(10, 2)
-  refundReason      String?
-  refundedAt        DateTime?
-  refundId          String?
-
-  // 영수증/증빙
-  receiptUrl        String?
-  invoiceNumber     String?
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  registration      Registration @relation(fields: [registrationId], references: [id])
-  webhookLogs       WebhookLog[]
-
-  @@index([status])
-  @@index([providerId])
-}
-
-model WebhookLog {
-  id                String    @id @default(uuid())
-  paymentId         String?
-
-  provider          String
-  eventType         String
-  payload           Json
-  processed         Boolean   @default(false)
-  processedAt       DateTime?
-  error             String?   @db.Text
-
-  createdAt         DateTime  @default(now())
-
-  payment           Payment?  @relation(fields: [paymentId], references: [id])
-
-  @@index([paymentId])
-  @@index([provider, eventType])
-}
-
-// ═══════════════════════════════════════════════════
-// Communication & Customization
-// ═══════════════════════════════════════════════════
-
-model EmailTemplate {
-  id                String    @id @default(uuid())
-  orgId             String
-
-  name              String
-  subject           String
-  bodyHtml          String    @db.Text
-  bodyText          String?   @db.Text
-
-  // 템플릿 유형
-  type              String
-
-  // 변수 정의
-  variables         Json      @default("[]")
-
-  isActive          Boolean   @default(true)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  organization      Organization @relation(fields: [orgId], references: [id])
-
-  @@unique([orgId, type])
-  @@index([orgId])
-}
-
-model CustomForm {
-  id                String    @id @default(uuid())
-  orgId             String
-
-  name              String
-  description       String?
-
-  // 폼 필드 정의
-  fields            Json
-
-  isActive          Boolean   @default(true)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  organization      Organization @relation(fields: [orgId], references: [id])
-  events            Event[]
-
-  @@index([orgId])
-}
-
-model Notification {
-  id                String    @id @default(uuid())
-  userId            String
-
-  type              String
-  title             String
-  content           String    @db.Text
-
-  isRead            Boolean   @default(false)
-  readAt            DateTime?
-
-  // 연관 정보
-  relatedType       String?
-  relatedId         String?
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-
-  user              User      @relation(fields: [userId], references: [id])
-
-  @@index([userId, isRead])
-  @@index([relatedType, relatedId])
-}
-
-model SmsLog {
-  id                String    @id @default(uuid())
-  orgId             String
-
-  // 수신자 정보
-  recipient         String
-  recipientName     String?
-  registrationId    String?
-  eventId           String?
-
-  // 메시지 내용
-  message           String    @db.Text
-  messageType       String
-  templateId        String?
-
-  // 발송 정보
-  provider          String
-  providerId        String?
-
-  // 상태
-  status            String    @default("pending")
-  sentAt            DateTime?
-  deliveredAt       DateTime?
-  failedAt          DateTime?
-  failureReason     String?
-
-  // 비용
-  cost              Decimal?  @db.Decimal(10, 2)
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-
-  organization      Organization @relation(fields: [orgId], references: [id])
-
-  @@index([orgId])
-  @@index([registrationId])
-  @@index([status])
-  @@index([createdAt])
-}
-
-// ═══════════════════════════════════════════════════
-// Storage Management
-// ═══════════════════════════════════════════════════
-
-model FileUpload {
-  id                String    @id @default(uuid())
-  orgId             String
-
-  // 파일 정보
-  fileName          String
-  originalName      String
-  fileType          String
-  mimeType          String
-  fileSize          BigInt
-
-  // 저장 위치
-  storageProvider   String    @default("local")
-  filePath          String
-  fileUrl           String
-  thumbnailUrl      String?
-
-  // 연관 정보
-  entityType        String?
-  entityId          String?
-  eventId           String?
-  registrationId    String?
-
-  // 업로드 정보
-  uploadedBy        String
-  uploadedAt        DateTime  @default(now())
-
-  // 상태
-  isPublic          Boolean   @default(false)
-  isDeleted         Boolean   @default(false)
-  deletedAt         DateTime?
-
-  // 보안
-  virusScanStatus   String?
-  virusScanAt       DateTime?
-
-  metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  organization      Organization @relation(fields: [orgId], references: [id])
-  event             Event?       @relation(fields: [eventId], references: [id])
-  registration      Registration? @relation(fields: [registrationId], references: [id])
-
-  @@index([orgId])
-  @@index([entityType, entityId])
-  @@index([uploadedBy])
-  @@index([isDeleted])
-}
-
-// ═══════════════════════════════════════════════════
-// Analytics & Audit
-// ═══════════════════════════════════════════════════
-
-model ActivityLog {
-  id                String    @id @default(uuid())
-  userId            String
-  orgId             String?
-
-  action            String
-  entityType        String
-  entityId          String?
-
-  // 변경 사항
-  oldValues         Json?
-  newValues         Json?
-
-  // 요청 정보
-  ipAddress         String?
-  userAgent         String?
-
-  createdAt         DateTime  @default(now())
-
-  user              User      @relation(fields: [userId], references: [id])
-  organization      Organization? @relation(fields: [orgId], references: [id])
-
-  @@index([userId])
-  @@index([orgId])
-  @@index([entityType, entityId])
-  @@index([createdAt])
-}
-
-model Analytics {
-  id                String    @id @default(uuid())
-  orgId             String
-  eventId           String?
-
-  date              DateTime  @db.Date
-
-  // 방문자 통계
-  pageViews         Int       @default(0)
-  uniqueVisitors    Int       @default(0)
-
-  // 등록 퍼널
-  registrationStarts Int      @default(0)
-  registrationCompletes Int   @default(0)
-
-  // 수익
-  revenue           Decimal   @default(0) @db.Decimal(10, 2)
-
-  // 상세 데이터
-  hourlyData        Json?
-  sourceData        Json?
-  deviceData        Json?
-
-  createdAt         DateTime  @default(now())
-
-  @@unique([orgId, eventId, date])
-  @@index([orgId])
-  @@index([eventId])
-  @@index([date])
 }

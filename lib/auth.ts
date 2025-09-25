@@ -6,6 +6,31 @@ import EmailProvider from "next-auth/providers/email";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 
+async function getUserOrganizations(userId: string) {
+  const memberships = await prisma.organizationMember.findMany({
+    where: {
+      userId,
+      isActive: true,
+    },
+    include: {
+      organization: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  return memberships.map((membership) => ({
+    orgId: membership.organization.id,
+    slug: membership.organization.slug,
+    name: membership.organization.name,
+    role: membership.role,
+  }));
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
   session: {
@@ -48,13 +73,15 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials");
         }
 
+        const organizations = await getUserOrganizations(user.id);
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           role: user.role,
-          image: user.image,
-          orgId: user.orgId,
+          image: user.profileImage,
+          organizations,
         };
       },
     }),
@@ -83,26 +110,26 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.orgId = token.orgId as string | null;
+        session.user.role = token.role;
+        session.user.organizations = token.organizations;
       }
       return session;
     },
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role || "user";
-        token.orgId = user.orgId || null;
+        token.role = user.role;
+        token.organizations = user.organizations;
       }
 
-      // Handle OAuth account linking
+      // Handle OAuth account linking and refresh organizations
       if (account?.provider && account.provider !== "credentials") {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
         });
         if (dbUser) {
           token.role = dbUser.role;
-          token.orgId = dbUser.orgId;
+          token.organizations = await getUserOrganizations(dbUser.id);
         }
       }
 
