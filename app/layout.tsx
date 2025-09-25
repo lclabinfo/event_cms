@@ -2,14 +2,21 @@ import { ReactNode } from 'react';
 import { SessionProvider } from '@/components/providers/session-provider';
 import './globals.css';
 
-// Root layout - provides SessionProvider for all routes
-// HTML/body tags are handled by individual route layouts
+export const metadata = {
+  title: 'Event Platform',
+  description: '다국어 지원 이벤트 관리 플랫폼',
+};
+
 export default function RootLayout({
   children,
 }: {
   children: ReactNode;
 }) {
   return (
-    <SessionProvider>{children}</SessionProvider>
+    <html lang="ko">
+      <body>
+        <SessionProvider>{children}</SessionProvider>
+      </body>
+    </html>
   );
 }

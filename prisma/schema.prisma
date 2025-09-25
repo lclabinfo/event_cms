@@ -189,6 +189,8 @@ model Event {
   fileUploads        FileUpload[]
   programs           Program[]
   registrations      Registration[]
+  pages              EventPage[]
+  menus              EventMenu[]
 
   @@unique([orgId, slug])
   @@index([orgId])
@@ -634,6 +636,52 @@ model Analytics {
   @@index([orgId])
   @@index([eventId])
   @@index([date])
+}
+
+model EventPage {
+  id        String   @id @default(uuid())
+  eventId   String
+  slug      String
+  title     Json     // Multi-language support {"ko": "한국어", "en": "English"}
+  content   Json     // Multi-language content
+  order     Int      @default(0)
+  isVisible Boolean  @default(true)
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  menus EventMenu[]
+
+  @@unique([eventId, slug])
+  @@index([eventId])
+  @@index([slug])
+}
+
+model EventMenu {
+  id        String   @id @default(uuid())
+  eventId   String
+  title     Json     // Multi-language support {"ko": "한국어", "en": "English"}
+  url       String?
+  pageId    String?
+  order     Int      @default(0)
+  parentId  String?
+  isVisible Boolean  @default(true)
+  type      String   @default("link") // "link", "page", "dropdown"
+  icon      String?
+  target    String   @default("_self") // "_self", "_blank"
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event  Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  page   EventPage? @relation(fields: [pageId], references: [id])
+  parent EventMenu? @relation("MenuHierarchy", fields: [parentId], references: [id])
+  children EventMenu[] @relation("MenuHierarchy")
+
+  @@index([eventId])
+  @@index([parentId])
+  @@index([order])
 }
 
 enum UserRole {
