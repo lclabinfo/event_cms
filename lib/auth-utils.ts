@@ -29,16 +29,79 @@ export async function requireRole(role: string) {
 }
 
 export async function requireAdmin() {
-  return requireRole("admin");
+  const user = await requireAuth();
+
+  if (user.role !== "SUPER_ADMIN") {
+    redirect("/unauthorized");
+  }
+
+  return user;
 }
 
-export async function getUserWithOrg(userId: string) {
-  return await prisma.user.findUnique({
-    where: { id: userId },
+export async function requireSuperAdmin() {
+  const user = await requireAuth();
+
+  if (user.role !== "SUPER_ADMIN") {
+    redirect("/unauthorized");
+  }
+
+  return user;
+}
+
+export async function getUserOrganizations(userId: string) {
+  const memberships = await prisma.organizationMember.findMany({
+    where: {
+      userId,
+      isActive: true,
+    },
     include: {
-      organization: true,
+      organization: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+        },
+      },
     },
   });
+
+  return memberships.map((membership) => ({
+    orgId: membership.organization.id,
+    slug: membership.organization.slug,
+    name: membership.organization.name,
+    role: membership.role,
+  }));
+}
+
+export async function canAccessOrganizationAdmin(
+  userId: string,
+  organizationSlug: string
+): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  if (!user) return false;
+
+  // Super admins can access all organizations
+  if (user.role === "SUPER_ADMIN") return true;
+
+  // Check if user is a member of the organization with admin privileges
+  const membership = await prisma.organizationMember.findFirst({
+    where: {
+      userId,
+      organization: {
+        slug: organizationSlug,
+      },
+      isActive: true,
+      role: {
+        in: ["ORG_OWNER", "ORG_ADMIN", "ORG_STAFF"],
+      },
+    },
+  });
+
+  return !!membership;
 }
 
 export async function canAccessOrganization(
@@ -47,16 +110,24 @@ export async function canAccessOrganization(
 ): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { orgId: true, role: true },
+    select: { role: true },
   });
 
   if (!user) return false;
 
-  // Admins can access all organizations
-  if (user.role === "admin") return true;
+  // Super admins can access all organizations
+  if (user.role === "SUPER_ADMIN") return true;
 
-  // Users can only access their own organization
-  return user.orgId === organizationId;
+  // Check if user is a member of the organization
+  const membership = await prisma.organizationMember.findFirst({
+    where: {
+      userId,
+      orgId: organizationId,
+      isActive: true,
+    },
+  });
+
+  return !!membership;
 }
 
 export async function canModifyRegistration(
@@ -65,17 +136,24 @@ export async function canModifyRegistration(
 ): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, role: true, orgId: true },
+    select: { id: true, role: true },
   });
 
   if (!user) return false;
 
-  // Admins can modify all registrations
-  if (user.role === "admin") return true;
+  // Super admins can modify all registrations
+  if (user.role === "SUPER_ADMIN") return true;
 
   const registration = await prisma.registration.findUnique({
     where: { id: registrationId },
-    select: { userId: true, orgId: true },
+    select: {
+      userId: true,
+      event: {
+        select: {
+          orgId: true
+        }
+      }
+    },
   });
 
   if (!registration) return false;
@@ -83,8 +161,29 @@ export async function canModifyRegistration(
   // Users can modify their own registrations
   if (registration.userId === userId) return true;
 
-  // Organization staff can modify registrations in their organization
-  if (user.role === "staff" && user.orgId === registration.orgId) return true;
+  // Check if user is an admin of the organization
+  const membership = await prisma.organizationMember.findFirst({
+    where: {
+      userId,
+      orgId: registration.event.orgId,
+      isActive: true,
+      role: {
+        in: ["ORG_OWNER", "ORG_ADMIN", "ORG_STAFF"],
+      },
+    },
+  });
 
-  return false;
+  return !!membership;
+}
+
+export async function requireOrganizationAccess(orgSlug: string) {
+  const user = await requireAuth();
+
+  const hasAccess = await canAccessOrganizationAdmin(user.id, orgSlug);
+
+  if (!hasAccess) {
+    redirect("/unauthorized");
+  }
+
+  return user;
 }

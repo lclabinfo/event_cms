@@ -14,12 +14,15 @@ const authMiddleware = withAuth(
           pathname === '/' ||
           pathname.startsWith('/auth') ||
           pathname.startsWith('/api/public') ||
-          // Allow org and event pages to be public
-          pathname.match(/^\/[^\/]+$/) || // /[orgSlug]
-          pathname.match(/^\/[^\/]+\/[^\/]+/); // /[orgSlug]/[eventSlug]/*
+          // Allow org and event pages to be public (but not admin pages)
+          (pathname.match(/^\/[^\/]+$/) && !pathname.includes('/admin')) || // /[orgSlug]
+          (pathname.match(/^\/[^\/]+\/[^\/]+/) && !pathname.includes('/admin')); // /[orgSlug]/[eventSlug]/*
 
-        // Admin paths that require admin role
-        const isAdminPath = pathname.startsWith('/admin');
+        // Super admin paths
+        const isSuperAdminPath = pathname.startsWith('/admin');
+
+        // Organization admin paths
+        const isOrgAdminPath = pathname.match(/^\/[^\/]+\/admin/);
 
         // Protected paths that require authentication
         const isProtectedPath =
@@ -32,17 +35,26 @@ const authMiddleware = withAuth(
           return true;
         }
 
-        // Require authentication for protected paths
-        if (isProtectedPath && !token) {
+        // Require authentication for all protected paths
+        if (!token) {
           return false;
         }
 
-        // Require admin role for admin paths
-        if (isAdminPath && token?.role !== 'admin') {
+        // Check super admin access
+        if (isSuperAdminPath && token.role !== 'SUPER_ADMIN') {
           return false;
         }
 
-        return !!token;
+        // For organization admin paths, we'll check in the page components
+        // because we need to verify organization membership
+        if (isOrgAdminPath) {
+          const allowedRoles = ['SUPER_ADMIN', 'ORG_OWNER', 'ORG_ADMIN', 'ORG_STAFF'];
+          if (!allowedRoles.includes(token.role as string)) {
+            return false;
+          }
+        }
+
+        return true;
       },
     },
     pages: {
@@ -173,7 +185,8 @@ export default async function middleware(req: NextRequest) {
   const requiresAuth =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/admin') ||
-    pathname.startsWith('/profile');
+    pathname.startsWith('/profile') ||
+    pathname.match(/^\/[^\/]+\/admin/); // Organization admin routes
 
   if (requiresAuth) {
     return (authMiddleware as any)(req);
