@@ -13,10 +13,10 @@ import {
 
 interface Props {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     orgSlug: string;
     eventSlug: string;
-  };
+  }>;
 }
 
 async function getEvent(orgSlug: string, eventSlug: string) {
@@ -44,6 +44,9 @@ async function getEvent(orgSlug: string, eventSlug: string) {
             },
             orderBy: {
               order: 'asc'
+            },
+            include: {
+              page: true
             }
           },
           page: true
@@ -70,20 +73,21 @@ function getLocalizedText(content: any, locale: string = 'ko'): string {
 }
 
 export default async function EventLayout({ children, params }: Props) {
-  const event = await getEvent(params.orgSlug, params.eventSlug);
+  const { orgSlug, eventSlug } = await params;
+  const event = await getEvent(orgSlug, eventSlug);
 
   if (!event) {
     notFound();
   }
 
   // Get locale from query params or default
-  const headersList = headers();
+  const headersList = await headers();
   const customDomain = headersList.get('x-custom-domain');
   const searchParams = new URL(headersList.get('referer') || 'http://localhost').searchParams;
   const currentLocale = searchParams.get('locale') || event.defaultLocale || 'ko';
 
   // Build base URL for links
-  const baseUrl = customDomain ? '' : `/${params.orgSlug}/${params.eventSlug}`;
+  const baseUrl = customDomain ? '' : `/${orgSlug}/${eventSlug}`;
 
   return (
     <div className="min-h-screen bg-white">

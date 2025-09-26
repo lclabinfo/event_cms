@@ -6,9 +6,9 @@ import { notFound } from "next/navigation";
 
 interface Props {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     orgSlug: string;
-  };
+  }>;
 }
 
 async function getOrganization(slug: string) {
@@ -30,8 +30,9 @@ async function getOrganization(slug: string) {
 }
 
 export default async function OrgAdminLayout({ children, params }: Props) {
-  const user = await requireOrganizationAccess(params.orgSlug);
-  const organization = await getOrganization(params.orgSlug);
+  const { orgSlug } = await params;
+  const user = await requireOrganizationAccess(orgSlug);
+  const organization = await getOrganization(orgSlug);
 
   return (
     <div className="flex h-screen">

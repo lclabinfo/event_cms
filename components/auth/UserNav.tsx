@@ -15,7 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface UserNavProps {
-  user: Pick<User, "name" | "image" | "email">;
+  user: {
+    name?: string | null;
+    image?: string | null;
+    email?: string | null;
+  };
 }
 
 export function UserNav({ user }: UserNavProps) {

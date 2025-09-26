@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 
 interface Props {
-  params: {
+  params: Promise<{
     orgSlug: string;
-  };
+  }>;
 }
 
 async function getOrganizationStats(slug: string) {
@@ -92,7 +92,8 @@ async function getOrganizationStats(slug: string) {
 }
 
 export default async function OrgAdminDashboard({ params }: Props) {
-  const data = await getOrganizationStats(params.orgSlug);
+  const { orgSlug } = await params;
+  const data = await getOrganizationStats(orgSlug);
 
   if (!data) {
     return <div>기관을 찾을 수 없습니다</div>;
@@ -110,7 +111,7 @@ export default async function OrgAdminDashboard({ params }: Props) {
           <p className="text-gray-600 mt-2">기관 현황을 한눈에 확인하세요</p>
         </div>
         <Button asChild>
-          <Link href={`/${params.orgSlug}/admin/events/new`}>
+          <Link href={`/${orgSlug}/admin/events/new`}>
             <Plus className="mr-2 h-4 w-4" />
             새 이벤트 생성
           </Link>
@@ -208,24 +209,24 @@ export default async function OrgAdminDashboard({ params }: Props) {
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
               <Button variant="outline" asChild className="justify-start">
-                <Link href={`/${params.orgSlug}/admin/events`}>
+                <Link href={`/${orgSlug}/admin/events`}>
                   <Calendar className="mr-2 h-4 w-4" />
                   이벤트 관리
                 </Link>
               </Button>
               <Button variant="outline" asChild className="justify-start">
-                <Link href={`/${params.orgSlug}/admin/members`}>
+                <Link href={`/${orgSlug}/admin/members`}>
                   <Users className="mr-2 h-4 w-4" />
                   팀 관리
                 </Link>
               </Button>
               <Button variant="outline" asChild className="justify-start">
-                <Link href={`/${params.orgSlug}/admin/settings`}>
+                <Link href={`/${orgSlug}/admin/settings`}>
                   기관 설정
                 </Link>
               </Button>
               <Button variant="outline" asChild className="justify-start">
-                <Link href={`/${params.orgSlug}/admin/analytics`}>
+                <Link href={`/${orgSlug}/admin/analytics`}>
                   통계 보기
                 </Link>
               </Button>
@@ -243,7 +244,7 @@ export default async function OrgAdminDashboard({ params }: Props) {
                 최근 생성되거나 업데이트된 이벤트가 표시됩니다
               </p>
               <Button variant="outline" asChild className="w-full">
-                <Link href={`/${params.orgSlug}/admin/events`}>
+                <Link href={`/${orgSlug}/admin/events`}>
                   모든 이벤트 보기
                 </Link>
               </Button>

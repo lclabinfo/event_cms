@@ -2,13 +2,13 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 
 interface Props {
-  params: {
+  params: Promise<{
     orgSlug: string;
     eventSlug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     locale?: string;
-  };
+  }>;
 }
 
 async function getEvent(orgSlug: string, eventSlug: string) {
@@ -49,13 +49,16 @@ function formatDate(date: Date, locale: string = 'ko'): string {
 }
 
 export default async function SchedulePage({ params, searchParams }: Props) {
-  const event = await getEvent(params.orgSlug, params.eventSlug);
+  const { orgSlug, eventSlug } = await params;
+  const { locale: searchLocale } = await searchParams;
+  
+  const event = await getEvent(orgSlug, eventSlug);
 
   if (!event) {
     notFound();
   }
 
-  const locale = searchParams.locale || event.defaultLocale || 'ko';
+  const locale = searchLocale || event.defaultLocale || 'ko';
 
   // Group programs by date
   const programsByDate = event.programs.reduce((acc: any, program) => {
@@ -142,7 +145,7 @@ export default async function SchedulePage({ params, searchParams }: Props) {
           {locale === 'ko' ? '📥 일정표 다운로드' : '📥 Download Schedule'}
         </button>
         <a
-          href={`/${params.orgSlug}/${params.eventSlug}/register${searchParams.locale ? `?locale=${searchParams.locale}` : ''}`}
+          href={`/${orgSlug}/${eventSlug}/register${searchLocale ? `?locale=${searchLocale}` : ''}`}
           className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold"
         >
           {locale === 'ko' ? '지금 등록하기' : 'Register Now'}

@@ -2,14 +2,14 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 
 interface Props {
-  params: {
+  params: Promise<{
     orgSlug: string;
     eventSlug: string;
     pageSlug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     locale?: string;
-  };
+  }>;
 }
 
 async function getEventPage(eventId: string, pageSlug: string) {
@@ -53,19 +53,22 @@ function getLocalizedContent(content: any, locale: string = 'ko'): { title: stri
 }
 
 export default async function DynamicEventPage({ params, searchParams }: Props) {
-  const event = await getEvent(params.orgSlug, params.eventSlug);
+  const { orgSlug, eventSlug, pageSlug } = await params;
+  const { locale: searchLocale } = await searchParams;
+  
+  const event = await getEvent(orgSlug, eventSlug);
 
   if (!event) {
     notFound();
   }
 
-  const page = await getEventPage(event.id, params.pageSlug);
+  const page = await getEventPage(event.id, pageSlug);
 
   if (!page) {
     notFound();
   }
 
-  const locale = searchParams.locale || event.defaultLocale || 'ko';
+  const locale = searchLocale || event.defaultLocale || 'ko';
   const { title, body } = getLocalizedContent({ title: page.title, content: page.content }, locale);
 
   return (

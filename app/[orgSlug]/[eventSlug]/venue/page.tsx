@@ -3,13 +3,13 @@ import { prisma } from '@/lib/db';
 import { getTranslations } from 'next-intl/server';
 
 interface Props {
-  params: {
+  params: Promise<{
     orgSlug: string;
     eventSlug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     locale?: string;
-  };
+  }>;
 }
 
 async function getEvent(orgSlug: string, eventSlug: string) {
@@ -37,13 +37,16 @@ function getLocalizedText(content: any, locale: string = 'ko'): string {
 }
 
 export default async function VenuePage({ params, searchParams }: Props) {
-  const event = await getEvent(params.orgSlug, params.eventSlug);
+  const { orgSlug, eventSlug } = await params;
+  const { locale: searchLocale } = await searchParams;
+  
+  const event = await getEvent(orgSlug, eventSlug);
 
   if (!event) {
     notFound();
   }
 
-  const locale = searchParams.locale || event.defaultLocale || 'ko';
+  const locale = searchLocale || event.defaultLocale || 'ko';
 
   // Get venue information from event data
   const venue = event.venue;
@@ -222,7 +225,7 @@ export default async function VenuePage({ params, searchParams }: Props) {
       {/* Register CTA */}
       <div className="mt-8 text-center">
         <a
-          href={`/${params.orgSlug}/${params.eventSlug}/register${searchParams.locale ? `?locale=${searchParams.locale}` : ''}`}
+          href={`/${orgSlug}/${eventSlug}/register${searchLocale ? `?locale=${searchLocale}` : ''}`}
           className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold"
         >
           {locale === 'ko' ? '지금 등록하기' : 'Register Now'}

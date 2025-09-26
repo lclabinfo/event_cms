@@ -4,12 +4,13 @@ import { getServerSession } from 'next-auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const { eventId } = await params;
     const menus = await prisma.eventMenu.findMany({
       where: {
-        eventId: params.eventId,
+        eventId,
         isVisible: true
       },
       orderBy: {
@@ -40,9 +41,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const { eventId } = await params;
     // Check authentication and authorization
     const session = await getServerSession();
     if (!session) {
@@ -76,7 +78,7 @@ export async function POST(
 
     const menu = await prisma.eventMenu.create({
       data: {
-        eventId: params.eventId,
+        eventId,
         title,
         url,
         pageId,
@@ -101,9 +103,10 @@ export async function POST(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const { eventId } = await params;
     // Check authentication and authorization
     const session = await getServerSession();
     if (!session) {
@@ -137,7 +140,7 @@ export async function PUT(
     const menu = await prisma.eventMenu.update({
       where: {
         id,
-        eventId: params.eventId
+        eventId
       },
       data: {
         ...(title !== undefined && { title }),
@@ -164,9 +167,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const { eventId } = await params;
     // Check authentication and authorization
     const session = await getServerSession();
     if (!session) {
@@ -200,7 +204,7 @@ export async function DELETE(
     await prisma.eventMenu.delete({
       where: {
         id: menuId,
-        eventId: params.eventId
+        eventId
       }
     });
 

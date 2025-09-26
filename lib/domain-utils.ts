@@ -17,7 +17,7 @@ export interface DomainInfo {
  * Extract domain information from request headers
  */
 export async function getDomainInfo(): Promise<DomainInfo> {
-  const headersList = headers();
+  const headersList = await headers();
   const host = headersList.get('host') || '';
 
   // Remove port if present
