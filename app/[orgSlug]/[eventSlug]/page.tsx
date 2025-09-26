@@ -7,13 +7,13 @@ import { Calendar, MapPin, Clock, Users, Globe, DollarSign, Info } from 'lucide-
 import { headers } from 'next/headers';
 
 interface Props {
-  params: {
+  params: Promise<{
     orgSlug: string;
     eventSlug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     locale?: string;
-  };
+  }>;
 }
 
 async function getEvent(orgSlug: string, eventSlug: string) {
@@ -73,19 +73,22 @@ function formatTime(date: Date, locale: string = 'ko'): string {
 }
 
 export default async function EventPage({ params, searchParams }: Props) {
-  const event = await getEvent(params.orgSlug, params.eventSlug);
+  const { orgSlug, eventSlug } = await params;
+  const { locale: searchLocale } = await searchParams;
+  
+  const event = await getEvent(orgSlug, eventSlug);
 
   if (!event) {
     notFound();
   }
 
   // Get current locale
-  const locale = searchParams.locale || event.defaultLocale || 'ko';
+  const locale = searchLocale || event.defaultLocale || 'ko';
 
   // Check if this is a custom domain request
-  const headersList = headers();
+  const headersList = await headers();
   const customDomain = headersList.get('x-custom-domain');
-  const baseUrl = customDomain ? '' : `/${params.orgSlug}/${params.eventSlug}`;
+  const baseUrl = customDomain ? '' : `/${orgSlug}/${eventSlug}`;
 
   // Event dates
   const startDate = new Date(event.startDate);
@@ -363,9 +366,9 @@ export default async function EventPage({ params, searchParams }: Props) {
                           정원: {program.currentCount}/{program.maxCapacity}
                         </p>
                       )}
-                      {program.price && program.price > 0 && (
+                      {program.price && Number(program.price) > 0 && (
                         <p className="text-sm font-medium mt-1">
-                          {event.currency} {program.price.toLocaleString()}
+                          {event.currency} {Number(program.price).toLocaleString()}
                         </p>
                       )}
                     </div>

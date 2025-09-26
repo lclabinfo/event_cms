@@ -7,9 +7,9 @@ import { Calendar, MapPin, Users, Globe, Settings } from 'lucide-react';
 import { headers } from 'next/headers';
 
 interface Props {
-  params: {
+  params: Promise<{
     orgSlug: string;
-  };
+  }>;
 }
 
 async function getOrganization(slug: string) {
@@ -40,14 +40,15 @@ async function getOrganization(slug: string) {
 }
 
 export default async function OrganizationPage({ params }: Props) {
-  const organization = await getOrganization(params.orgSlug);
+  const { orgSlug } = await params;
+  const organization = await getOrganization(orgSlug);
 
   if (!organization) {
     notFound();
   }
 
   // Check if this is a custom domain request
-  const headersList = headers();
+  const headersList = await headers();
   const customDomain = headersList.get('x-custom-domain');
 
   return (
@@ -162,7 +163,7 @@ export default async function OrganizationPage({ params }: Props) {
 
                     <div className="pt-4">
                       <Button asChild className="w-full">
-                        <Link href={customDomain ? `/${event.slug}` : `/${params.orgSlug}/${event.slug}`}>
+                        <Link href={customDomain ? `/${event.slug}` : `/${orgSlug}/${event.slug}`}>
                           자세히 보기
                         </Link>
                       </Button>
@@ -250,7 +251,7 @@ export default async function OrganizationPage({ params }: Props) {
                 개인정보처리방침
               </Link>
               <Link
-                href={`/${params.orgSlug}/admin`}
+                href={`/${orgSlug}/admin`}
                 className="inline-flex items-center text-sm text-gray-400 hover:text-white"
                 title="기관 관리자"
               >

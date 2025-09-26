@@ -2,13 +2,13 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 
 interface Props {
-  params: {
+  params: Promise<{
     orgSlug: string;
     eventSlug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     locale?: string;
-  };
+  }>;
 }
 
 async function getEvent(orgSlug: string, eventSlug: string) {
@@ -28,13 +28,16 @@ async function getEvent(orgSlug: string, eventSlug: string) {
 }
 
 export default async function LoginPage({ params, searchParams }: Props) {
-  const event = await getEvent(params.orgSlug, params.eventSlug);
+  const { orgSlug, eventSlug } = await params;
+  const { locale: searchLocale } = await searchParams;
+  
+  const event = await getEvent(orgSlug, eventSlug);
 
   if (!event) {
     notFound();
   }
 
-  const locale = searchParams.locale || event.defaultLocale || 'ko';
+  const locale = searchLocale || event.defaultLocale || 'ko';
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -135,7 +138,7 @@ export default async function LoginPage({ params, searchParams }: Props) {
               {locale === 'ko' ? '아직 계정이 없으신가요?' : "Don't have an account?"}
               {' '}
               <a
-                href={`/${params.orgSlug}/${params.eventSlug}/register${searchParams.locale ? `?locale=${searchParams.locale}` : ''}`}
+                href={`/${orgSlug}/${eventSlug}/register${searchLocale ? `?locale=${searchLocale}` : ''}`}
                 className="text-blue-600 hover:underline font-semibold"
               >
                 {locale === 'ko' ? '등록하기' : 'Register'}

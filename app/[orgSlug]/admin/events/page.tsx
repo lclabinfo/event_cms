@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface Props {
-  params: {
+  params: Promise<{
     orgSlug: string;
-  };
+  }>;
 }
 
 async function getOrganizationEvents(slug: string) {
@@ -45,7 +45,8 @@ async function getOrganizationEvents(slug: string) {
 }
 
 export default async function OrgEventsPage({ params }: Props) {
-  const events = await getOrganizationEvents(params.orgSlug);
+  const { orgSlug } = await params;
+  const events = await getOrganizationEvents(orgSlug);
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -77,7 +78,7 @@ export default async function OrgEventsPage({ params }: Props) {
           <p className="text-gray-600 mt-2">기관의 모든 이벤트를 관리합니다</p>
         </div>
         <Button asChild>
-          <Link href={`/${params.orgSlug}/admin/events/new`}>
+          <Link href={`/${orgSlug}/admin/events/new`}>
             <Plus className="mr-2 h-4 w-4" />
             새 이벤트
           </Link>
@@ -105,13 +106,13 @@ export default async function OrgEventsPage({ params }: Props) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild>
-                        <Link href={`/${params.orgSlug}/admin/events/${event.id}`}>
+                        <Link href={`/${orgSlug}/admin/events/${event.id}`}>
                           <Edit className="mr-2 h-4 w-4" />
                           편집
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href={`/${params.orgSlug}/${event.slug}`} target="_blank">
+                        <Link href={`/${orgSlug}/${event.slug}`} target="_blank">
                           <Eye className="mr-2 h-4 w-4" />
                           미리보기
                         </Link>
@@ -160,13 +161,13 @@ export default async function OrgEventsPage({ params }: Props) {
                 </div>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/${params.orgSlug}/admin/events/${event.id}/registrations`}>
+                    <Link href={`/${orgSlug}/admin/events/${event.id}/registrations`}>
                       <Users className="mr-2 h-4 w-4" />
                       참가자
                     </Link>
                   </Button>
                   <Button size="sm" asChild>
-                    <Link href={`/${params.orgSlug}/admin/events/${event.id}`}>
+                    <Link href={`/${orgSlug}/admin/events/${event.id}`}>
                       관리
                     </Link>
                   </Button>
@@ -183,7 +184,7 @@ export default async function OrgEventsPage({ params }: Props) {
             <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">아직 생성된 이벤트가 없습니다</p>
             <Button className="mt-4" asChild>
-              <Link href={`/${params.orgSlug}/admin/events/new`}>
+              <Link href={`/${orgSlug}/admin/events/new`}>
                 <Plus className="mr-2 h-4 w-4" />
                 첫 이벤트 만들기
               </Link>

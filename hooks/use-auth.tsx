@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { UserRole } from "@prisma/client";
 
 interface UseAuthOptions {
   redirectTo?: string;
@@ -39,8 +40,8 @@ export function useAuth({
     user,
     loading,
     isAuthenticated: !!user,
-    isAdmin: user?.role === "admin",
-    isStaff: user?.role === "staff",
+    isAdmin: user?.role === UserRole.SUPER_ADMIN || user?.role === UserRole.ORG_ADMIN,
+    isStaff: user?.role === UserRole.ORG_STAFF,
     session,
   };
 }
